@@ -7,7 +7,7 @@
 		</div>
 		<div class="col-md-6">
 			<div class="card mx-5" id="carta-login">
-                <div class="card-header">{{ __('Login') }}</div>
+                <div class="card-header text-center">{{ __('Pisos de Ventas') }}</div>
 
                 <div class="card-body">
                     <form method="POST" action="{{ route('login') }}">

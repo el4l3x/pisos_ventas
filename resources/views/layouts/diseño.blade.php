@@ -18,21 +18,22 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    
+    <link href="{{ asset('css/estilos.css') }}" rel="stylesheet">
+
     <style type="text/css">
         html, body{
           height:100%;
           margin:0;
           display: flex;
           flex-direction: column;
-          /*background-color: #f8fafc !important;*/
-          background-image: url('img/background.jpg');
+          background-color: #f8fafc !important;*/
+       /*   background-image: url('img/background.jpg');*/
           background-position: center;
           background-size: cover;
 
         }
 
-        
+
     </style>
 </head>
 <body>
@@ -48,16 +49,16 @@
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
-             
+
                     <ul class="navbar-nav mr-auto">
 
                     </ul>
 
                     <ul class="navbar-nav ml-auto">
-                       
-                            
+
+
                         @guest
-                           
+
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('index') }}">{{ __('Inicio') }}</a>
                             </li>

@@ -41,17 +41,17 @@
 				<!--DATOS GLOBALES-->
 				<div class="row text-white text-center">
 					<div class="col-md-3" style="line-height: 5em; font-size: 1.5em;">
-						<div class="bg-primary rounded shadow">Ventas: {{count.ventas}}</div>
+						<div class="bg-dark rounded shadow">Ventas: {{count.ventas}}</div>
 
 					</div>
 					<div class="col-md-3" style="line-height: 5em; font-size: 1.5em;">
-						<div class="bg-danger rounded shadow">Compras: {{count.compras}}</div>
+						<div class="bg-dark rounded shadow">Compras: {{count.compras}}</div>
 					</div>
 					<div class="col-md-3" style="line-height: 5em; font-size: 1.5em;">
-						<div class="bg-warning rounded shadow">Despachos: {{count.despachos}}</div>
+						<div class="bg-dark rounded shadow">Despachos: {{count.despachos}}</div>
 					</div>
 					<div class="col-md-3" style="line-height: 5em; font-size: 1.5em;">
-						<div class="bg-success rounded shadow">Retiros: {{count.retiros}}</div>
+						<div class="bg-dark rounded shadow">Retiros: {{count.retiros}}</div>
 
 					</div>
 				</div>
@@ -172,7 +172,7 @@
 								console.log(response);
 								//ACTUALIZAMOS LOS PRECIOS
 
-								axios.get('http://mipuchito.com/api/get-precios-inventory/'+this.id).then(response => {//WEB
+								axios.get('http://mipuchito.com/api/get-precios-inventory/'+this.id).then(response => {//WdarkEB
 
 									console.log(response)
 									let inventory = response.data.inventory

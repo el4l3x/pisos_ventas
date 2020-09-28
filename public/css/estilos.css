@@ -1,0 +1,124 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+.containner{
+   /* background: url('../logo/cne3.jpg');*/
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    width: 100%;
+    height: 100vh;
+    padding: 30px;
+
+    /* Flexbox */
+    display: flex;
+    flex-flow: column wrap;
+
+    justify-content: center;
+}
+.background {
+    background-color: white;
+    width: 40%;
+
+}
+
+.background .new_cuenta{
+    width: 100%;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+.background .new_cuenta a, .background .new_cuenta {
+    color: #8b8b8b;
+    text-decoration: none;
+    transition: .2s;
+}
+.background .new_cuenta a { padding: 3px; }
+.background .new_cuenta a:hover {
+    border-bottom: 2px solid #3498db;
+    transition: .2s;
+    border-bottom-left-radius: 5px;
+
+}
+.background .new_cuenta a:active {
+    border-bottom: 1px solid #3498db;
+    transition: .2s;
+}
+.background .head_containner {
+    text-align: center;
+    width: 100%;
+    background-color: #3498db;
+    color: white;
+    padding: 10px;
+    transition: .4s;
+}
+.background .form_containner{
+    height: 200px;
+    padding: 20px;
+
+    /* Flexbox */
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+.background .form_containner .ee{
+    padding: 5px;
+    color: #3498db;
+    border-radius: 10px;
+    border: 1.5px solid #3498db;
+    width: 65%;
+    transition: .4s;
+}
+.background .form_containner .ee:hover{
+    transition: .4s;
+    transform: translateX(22px);
+}
+.background .form_containner .ee::placeholder{
+
+    color: #3498db;
+}
+.background:hover .head_containner{
+    background-color: #1a5b86;
+    transition: .4s;
+}
+input {
+    border-radius: 10px solid grey;
+}
+.submit {
+    width: 25%;
+    min-width: 100px;
+    background-color: #3498db;
+    padding: 8px;
+    border: 2px solid #3498db;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: .4s;
+    font-size: 12px;
+}
+
+.submit:hover{
+    background-color: #ffffff;
+    color: #3498db;
+    border: 2px solid #3498db;
+    transition: .4s;
+    transform: translateX(22px);
+}
+.submit:active {
+    animation-name: 'animacion1';
+    animation-duration: 2s;
+    animation-direction: alternate;
+}
+.background, .form_containner{
+    display: flex;
+    flex-flow: column wrap;
+}
+
+a{
+    cursor: pointer;
+}
+
