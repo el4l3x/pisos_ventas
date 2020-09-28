@@ -172,7 +172,7 @@
 								console.log(response);
 								//ACTUALIZAMOS LOS PRECIOS
 
-								axios.get('http://mipuchito.com/api/get-precios-inventory').then(response => {//WEB
+								axios.get('http://mipuchito.com/api/get-precios-inventory/'+this.id).then(response => {//WEB
 
 									console.log(response)
 									let inventory = response.data.inventory
@@ -205,7 +205,7 @@
 						console.log("no hay productos para anclar")
 						//ACTUALIZAMOS LOS PRECIOS
 
-						axios.get('http://mipuchito.com/api/get-precios-inventory').then(response => {//WEB
+						axios.get('http://mipuchito.com/api/get-precios-inventory/'+this.id).then(response => {//WEB
 
 							console.log(response)
 							let inventory = response.data.inventory
@@ -343,7 +343,7 @@
 										console.log(response);
 										//ACTUALIZAMOS LOS PRECIOS
 
-										axios.get('http://mipuchito.com/api/get-precios-inventory').then(response => {//WEB
+										axios.get('http://mipuchito.com/api/get-precios-inventory/'+this.id).then(response => {//WEB
 
 											console.log(response)
 											let inventory = response.data.inventory
@@ -376,7 +376,7 @@
 								console.log("no hay productos para anclar")
 								//ACTUALIZAMOS LOS PRECIOS
 
-								axios.get('http://mipuchito.com/api/get-precios-inventory').then(response => {//WEB
+								axios.get('http://mipuchito.com/api/get-precios-inventory/'+this.id).then(response => {//WEB
 
 									console.log(response)
 									let inventory = response.data.inventory
