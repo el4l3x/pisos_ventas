@@ -1,5 +1,5 @@
 <template>
-	<div>	
+	<div>
 		<div class="container">
 			<!--ALERT SI NO HAY SUFICIENTES PRODUCTOS-->
 			<b-alert
@@ -29,7 +29,7 @@
 					<h1 class="text-center">Ventas y compras</h1>
 					<div class="mb-3">
 						<div class="row justify-content-between">
-							<div class="col-12 col-md-2">			
+							<div class="col-12 col-md-2">
 								<!--<button class="btn btn-primary" @click="refrescar">Sincronizar</button>-->
 								<!--<button type="button" @click="sync_anular" class="btn btn-primary">sync anular</button>-->
 							</div>
@@ -39,11 +39,11 @@
 								<button type="button" class="btn btn-danger" @click="showModalCompra">Compra</button>
 								<button type="button" class="btn btn-primary" @click="showModalNuevo">Venta</button>
 							-->
-							</div>		
-							
+							</div>
+
 						</div>
 					</div>
-					
+
 					<div class="text-right my-3">
 						<form action="" method="get" @submit.prevent="filtrar">
 							<input type="date" v-model="fecha_inicial">
@@ -105,7 +105,7 @@
 
 						      		<div class="row">
 						      			<div class="col-md-7">
-						      				
+
 						      			</div>
 
 						      			<div class="col-md-2 text-right">
@@ -122,7 +122,7 @@
 							   				<br>
 							      			<span>{{venta.total}}</span>
 						      			</div>
-						      			
+
 						      		</div>
 								</b-modal>
 
@@ -163,7 +163,7 @@
 
 					<!-- Modal NUEVA VENTA-->
 					<b-modal id="modal-nuevo" size="lg" title="Realizar ua nueva venta" hide-footer>
-					
+
 			      		<form method="post" @submit.prevent=""><!--Formulario-->
 
 							<div>
@@ -220,7 +220,7 @@
 
 							<div class="row">
 						      			<div class="col-md-7">
-						      				
+
 						      			</div>
 
 						      			<div class="col-md-2 text-right">
@@ -237,9 +237,9 @@
 							   				<br>
 							      			<span class="small">{{total_total}}</span>
 						      			</div>
-						      			
+
 						      		</div>
-				      	
+
 					      	<div class="modal-footer">
 					        	<button type="submit" class="btn btn-primary" @click="vender" :disabled="productos.length <= 0">Vender</button>
 					      	</div>
@@ -250,7 +250,7 @@
 
 					<!-- Modal NUEVA COMPRA-->
 					<b-modal id="modal-compra" size="lg" title="Realizar ua nueva compra" hide-footer>
-					
+
 							<div >
 								<!--
 								<div class="form-row">
@@ -426,7 +426,7 @@
 
 							<div class="row">
 						      			<div class="col-md-7">
-						      				
+
 						      			</div>
 
 						      			<div class="col-md-2 text-right">
@@ -443,9 +443,9 @@
 							   				<br>
 							      			<span class="small">{{total_total_comprar}}</span>
 						      			</div>
-						      			
+
 						      		</div>
-				      	
+
 					      	<div class="modal-footer">
 					        	<button type="submit" class="btn btn-danger" @click="comprar" :disabled="productos_comprar <= 0">Compra</button>
 					      	</div>
@@ -486,7 +486,7 @@
 				cantidad_disponible: "",
 				error: false,
 				error_message: "",
-				dismissSecs: 10,//MODAL 
+				dismissSecs: 10,//MODAL
 		        dismissCountDown: 0,
 		        showDismissibleAlert: false,
 		        alert_success: false,
@@ -541,7 +541,7 @@
 				});
 			},
 			showModalNuevo(){
-				
+
 				this.get_datos();
 				this.$bvModal.show("modal-nuevo")
 			},
@@ -550,24 +550,24 @@
 
 					let resultado = this.inventario_compra.find(element => element.inventario.id == id)
 					this.articulo_compra.nombre = resultado.inventario.name;
-					
+
 					this.articulo_compra.sub_total = resultado.inventario.precio.sub_total_menor
 					this.articulo_compra.iva = resultado.inventario.precio.iva_menor
 					this.articulo_compra.total = resultado.inventario.precio.total_menor
 
-					
+
 					console.log(this.articulo_compra);
 				}else{
 
 					let resultado = this.inventario.find(element => element.inventario.id == id)
 					this.articulo.nombre = resultado.inventario.name;
-					
+
 					this.articulo.sub_total = resultado.inventario.precio.sub_total_menor
 					this.articulo.iva = resultado.inventario.precio.iva_menor
 					this.articulo.total = resultado.inventario.precio.total_menor
-					
+
 					this.cantidad_disponible = resultado.cantidad;
-					
+
 					console.log(this.articulo);
 				}
 
@@ -585,17 +585,17 @@
 					this.articulo_compra.total *= this.articulo_compra.cantidad
 
 					this.productos_comprar.push(this.articulo_compra);
-						
+
 					//console.log(this.productos)
 					this.articulo_compra = {nombre: "", cantidad: "", sub_total: "", iva: "", total: "", unidad: "", costo: null, iva_porc: null, margen_ganancia: null};
 				}else{
-				
+
 					this.articulo.sub_total *= this.articulo.cantidad
 					this.articulo.iva *= this.articulo.cantidad
 					this.articulo.total *= this.articulo.cantidad
 
 					this.productos.push(this.articulo);
-						
+
 					//console.log(this.productos)
 					this.articulo = {id: 0, nombre: "", cantidad: "", sub_total: "", iva: "", total: ""};
 				}
@@ -606,7 +606,7 @@
 				}else{
 					this.productos.splice(index, 1);
 				}
-				
+
 			},
 			paginar(event){
 
@@ -615,7 +615,7 @@
 					this.per_page = response.data.per_page;
 					this.total_paginas = response.data.total;
 					this.ventas = response.data.data
-			
+
 				}).catch(e => {
 					console.log(e.response)
 				});
@@ -640,13 +640,13 @@
 						this.ventas.splice(0,0, response.data);
 						this.productos = [];
 					}
-					
-					
+
+
 				}).catch(e => {
 
 					console.log(e.response)
 				})
-				
+
 				this.$bvModal.hide("modal-nuevo")
 			},
 			countDownChanged(dismissCountDown) {//MODAL
@@ -663,7 +663,7 @@
 					let piso_venta_id = response.data;
 					//console.log(piso_venta_id)
 					//OBTENEMOS DE LA WEB LA ULTIMA VENTA QUE TIENE REGISTRADA CON NUESTRO PISO DE VENTA
-					axios.get('http://127.0.0.1:8000/api/ultima-venta/'+piso_venta_id).then(response => {//WEB
+					axios.get('http://mipuchito.com/api/ultima-venta/'+piso_venta_id).then(response => {//WEB
 
 						let ultima_venta = response.data.id_extra
 						//console.log(ultima_venta)
@@ -678,7 +678,7 @@
 
 
 							//EN ESE CASO REGISTRAMOS LAS VENTAS EN LA WEB
-							axios.post('http://127.0.0.1:8000/api/registrar-ventas', {ventas: ventas, piso_venta_id: piso_venta_id}).then(response => {
+							axios.post('http://mipuchito.com/api/registrar-ventas', {ventas: ventas, piso_venta_id: piso_venta_id}).then(response => {
 
 								console.log(response.data)
 								if (response.data == true) {
@@ -735,12 +735,12 @@
 						this.articulo_compra = {nombre: "", cantidad: "", sub_total: "", iva: "", total: "", unidad: "", costo: null, iva_porc: null, margen_ganancia: null};
 						this.ventas.splice(0,0, response.data);
 						this.productos_comprar = [];
-								
+
 				}).catch(e => {
 
 					console.log(e.response)
 				})
-				
+
 				this.$bvModal.hide("modal-compra")
 			},
 			filtrar(){
@@ -784,7 +784,7 @@
 						let ventas = response.data;
 						if (ventas.length > 0) {
 							//ACTUALIZAMOS LOS ANULADOS EN LA WEB
-							axios.post('http://127.0.0.1:8000/api/actualizar-anulados', {ventas: ventas, piso_venta: piso_venta_id}).then(response => {//WEB
+							axios.post('http://mipuchito.com/api/actualizar-anulados', {ventas: ventas, piso_venta: piso_venta_id}).then(response => {//WEB
 
 								console.log(response);
 								//VOLVEMOS A ACTUALIZAR EN LOCAL
@@ -806,7 +806,7 @@
 
 				}).catch(e => {
 						console.log(e.response);
-					})	
+					})
 			}
 		},
 		computed:{
@@ -819,7 +819,7 @@
 
 				})
 				this.sub_total = subtotal;
-				
+
 				return subtotal;
 			},
 			iva_total(){
@@ -877,7 +877,7 @@
 
 				})
 				this.sub_total_de_compra = subtotal;
-				
+
 				return subtotal;
 			},
 			iva_total_total_comprar(){

@@ -1,6 +1,6 @@
 <template>
 	<div>
-		
+
 		<div class="container">
 			<!--ALERT DE EXITO-->
 		    <b-alert show variant="success" fade dismissible v-if="alert_success == true">{{alert_message}}</b-alert>
@@ -18,11 +18,11 @@
 									<input type="text" v-model="search" class="form-control d-inline" placeholder="Buscar producto" @change="get_inventario">
 									<button type="button" class="btn btn-primary" @click="get_inventario">Buscar</button>
 								</div>
-								
+
 							</div>
 						</div>
-					
-					</div>		 
+
+					</div>
 
 					<table class="table table-bordered table-sm table-hover table-striped">
 						<thead>
@@ -53,11 +53,11 @@
 								        		</button>
 								      		</div>
 								      		<div class="modal-body">
-								     			
+
 								      			<h5 class="text-center font-weight-bold">{{producto.inventario.name}}</h5>
 
 								      			<table class="table table-bordered">
-								      	
+
 								      				<thead>
 								      					<tr>
 								      						<th>propiedades</th>
@@ -70,31 +70,31 @@
 								      					<tr>
 								      						<th>Cantidad</th>
 								      						<td>{{producto.cantidad}}</td>
-								      				
+
 								      					</tr>
-								      					
+
 								      					<tr>
 								      						<th>Unidad</th>
 								      						<td>{{producto.inventario.unit_type_menor}}</td>
-								      					
+
 								      					</tr>
 
 								      					<tr>
 								      						<td>Subtotal</td>
 								      						<td>{{producto.inventario.precio.sub_total_menor}}</td>
-								      					
+
 								      					</tr>
 
 								      					<tr>
 								      						<td>Iva</td>
 								      						<td>{{producto.inventario.precio.iva_menor}}</td>
-								      					
+
 								      					</tr>
 
 								      					<tr>
 								      						<td>Total</td>
 								      						<td>{{producto.inventario.precio.total_menor}}</td>
-								      			
+
 								      					</tr>
 
 
@@ -130,7 +130,7 @@
 
 	export default{
 		components: {
-			
+
 		},
 		data(){
 			return{
@@ -166,7 +166,7 @@
 					this.per_page = response.data.per_page;
 					this.total_paginas = response.data.total;
 					this.productos = response.data.data
-			
+
 				}).catch(e => {
 					console.log(e.response)
 				});
@@ -178,7 +178,7 @@
 					//console.log(response.data)
 					let ultimoInventory = response.data
 					//TRAEMOS DE LA WEB TODOS LOS PRODUCTOS APARTIR DEL ULTIMO ID
-					axios.get('http://127.0.0.1:8000/api/get-inventory/'+ultimoInventory).then(response => {//WEB
+					axios.get('http://mipuchito.com/api/get-inventory/'+ultimoInventory).then(response => {//WEB
 
 						//console.log(response)
 						let productos = response.data
@@ -203,7 +203,7 @@
 
 						//ACTUALIZAMOS LOS PRECIOS
 
-						axios.get('http://127.0.0.1:8000/api/get-precios-inventory').then(response => {//WEB
+						axios.get('http://mipuchito.com/api/get-precios-inventory').then(response => {//WEB
 
 							console.log(response)
 							let articulos = response.data
@@ -220,7 +220,7 @@
 					}).catch(e => {
 						console.log(e.response)
 					});
-			
+
 				}).catch(e => {
 					console.log(e.response)
 				});
@@ -243,7 +243,7 @@
 			get_id(){
 
 				axios.get('/api/get-id').then(response => {
-					
+
 					this.id = response.data;
 
 				}).catch(e => {
@@ -257,6 +257,6 @@
 			this.get_id();
 
 		},
-		
+
 	}
 </script>

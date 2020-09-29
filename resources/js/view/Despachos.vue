@@ -1,5 +1,5 @@
 <template>
-	<div>	
+	<div>
 		<div class="container">
 
 			<!--ALERT DE EXITO-->
@@ -10,15 +10,15 @@
 					<h1 class="text-center">Despachos-pisos</h1>
 					<div class="mb-3">
 						<div class="row justify-content-between">
-							<div class="col-12 col-md-2">			
+							<div class="col-12 col-md-2">
 								<!--<button class="btn btn-primary " @click="refrescar">Sincronizar</button>-->
 							</div>
 							<div class="col-12 col-md-2">
-							</div>		
-							
+							</div>
+
 						</div>
 					</div>
-					
+
 					<table class="table table-bordered table-sm table-hover table-striped">
 						<thead>
 							<tr>
@@ -31,7 +31,7 @@
 						<tbody>
 							<tr v-for="(despacho, index) in despachos" :key="index">
 								<td>{{despacho.created_at}} {{despacho.id}}</td>
-								<th>{{despacho.type == 1? "despacho" : "retiro"}}</th>		
+								<th>{{despacho.type == 1? "despacho" : "retiro"}}</th>
 								<td v-if="despacho.confirmado == null" class="small font-weight-bold">No se ah confirmado</td>
 								<td v-else class="small font-weight-bold">{{despacho.confirmado == 1 ? "confirmado" : "negado"}}</td>
 								<td>
@@ -51,7 +51,7 @@
 								        		</button>
 								      		</div>
 								      		<div class="modal-body">
-								        	
+
 								      		<table class="table table-bordered">
 											<thead>
 												<tr>
@@ -127,7 +127,7 @@
 					this.per_page = response.data.per_page;
 					this.total_paginas = response.data.total;
 					this.despachos = response.data.data
-			
+
 				}).catch(e => {
 					console.log(e.response)
 				});
@@ -155,7 +155,7 @@
 			get_id(){
 
 				axios.get('/api/get-id').then(response => {
-					
+
 					this.id = response.data;
 
 				}).catch(e => {
@@ -177,10 +177,10 @@
 					if (response.data.id_extra != null) {
 						ultimoDespacho = response.data.id_extra;
 					}
-					
-					
+
+
 					//SOLICITAR DESPACHOS NUEVOS (para eso necesito el ultimo despacho recibido)
-					axios.post('http://127.0.0.1:8000/api/get-despachos-web', {piso_venta_id: this.id, ultimo_despacho: ultimoDespacho}).then(response => {//DEL LADO DE LA WEB
+					axios.post('http://mipuchito.com/api/get-despachos-web', {piso_venta_id: this.id, ultimo_despacho: ultimoDespacho}).then(response => {//DEL LADO DE LA WEB
 
 						nuevosDespachos = response.data;
 						console.log(nuevosDespachos)
@@ -195,7 +195,7 @@
 
 							//REGISTRAR LOS DESPACHOS RECIBIDOS
 							axios.post('/api/registrar-despachos-piso-venta', {despachos: nuevosDespachos}).then(response => {//
-					
+
 								console.log(response);//SI REGISTRA DEBERIA DAR TRUE
 								if (response.data == true) {
 									this.alert_success = true;
@@ -211,8 +211,8 @@
 						this.alert_message = "No hay despachos para sincronizar"
 						}
 						//PEDIR DE LA WEB LOS DESPACHOS QUE NO ESTAN CONFIRMADOS
-						axios.get('http://127.0.0.1:8000/api/get-despachos-sin-confirmacion/'+this.id).then(response => {//DEL LADO DE LA WEB
-							
+						axios.get('http://mipuchito.com/api/get-despachos-sin-confirmacion/'+this.id).then(response => {//DEL LADO DE LA WEB
+
 						despachosSinConfirmar = response.data;
 						//console.log(response.data);
 						if (despachosSinConfirmar.length > 0) {
@@ -222,8 +222,8 @@
 								despachosConfirmados = response.data
 								//console.log(response.data);
 								//GUARDAR LOS DATOS ANTERIORES EN LA WEB
-								axios.post('http://127.0.0.1:8000/api/actualizar-confirmados', {despachos: despachosConfirmados, piso_venta_id: this.id}).then(response => {//DEL LADO DE LA WEB PARA ACTUALIZAR LAS CONFIRMACIONES
-						
+								axios.post('http://mipuchito.com/api/actualizar-confirmados', {despachos: despachosConfirmados, piso_venta_id: this.id}).then(response => {//DEL LADO DE LA WEB PARA ACTUALIZAR LAS CONFIRMACIONES
+
 								console.log(response);
 								this.alert_success = true;
 								this.alert_message += " nuevos datos confirmados"
@@ -239,7 +239,7 @@
 						}).catch(e => {
 							console.log(e.response)
 						});
-		
+
 					}).catch(e => {
 						console.log(e.response);
 					})
@@ -267,7 +267,7 @@
 			sinconfirmacion(){
 				//PEDIR DE LA WEB LOS DESPACHOS QUE NO ESTAN CONFIRMADOS
 							axios.get('/api/get-despachos-sin-confirmacion/'+this.id).then(response => {
-					
+
 								console.log(response);
 
 							}).catch(e => {

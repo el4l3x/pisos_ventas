@@ -39,12 +39,12 @@ class DespachosController extends Controller
         $usuario = Auth::user()->piso_venta->id;
 
         $despacho = Despacho::with(['productos' => function($producto){
-        
+
         }])->findOrFail($request->id);
         $despacho->confirmado = 1;
         $despacho->save();
 
-        
+
         foreach ($despacho->productos as $valor) {
             //RESTAMOS DE INVENTORY DE PROMETHEUS
             $inventario = Inventory::findOrFail($valor->id);
@@ -54,7 +54,7 @@ class DespachosController extends Controller
             //BUSCAMOS EL ID EN INVENTARIO
             $producto = Inventario::select('id')->where('inventory_id', $valor->pivot->inventory_id)->orderBy('id', 'desc')->first();
 
-            $inventario = Inventario_piso_venta::with('inventario')->where('piso_venta_id', $usuario)->where('inventario_id', $producto->id)->orderBy('id', 'desc')->first(); 
+            $inventario = Inventario_piso_venta::with('inventario')->where('piso_venta_id', $usuario)->where('inventario_id', $producto->id)->orderBy('id', 'desc')->first();
 
             if ($inventario['id'] == null) {
                 $inventario = new Inventario_piso_venta();
@@ -65,7 +65,7 @@ class DespachosController extends Controller
             }else{
                 //SI ES UN DESPACHO O ES UN RETIRO
                 if($despacho->type == 1){
-                    
+
 
                         $inventario->cantidad += $valor->pivot->cantidad;
 
@@ -77,9 +77,9 @@ class DespachosController extends Controller
             }
             $inventario->save();
 
-    
+
         }
-        
+
         return response()->json($despacho);
     }
 
@@ -87,18 +87,18 @@ class DespachosController extends Controller
     {
 
         $despacho = Despacho::with(['productos' => function($articulo){
-       
+
         }])->findOrFail($request->id);
         $despacho->confirmado = 0;
         $despacho->save();
         /*
         foreach ($despacho->productos as $valor) {
-            
+
             $producto = Inventario_piso_venta::whereHas('inventario', function($q){
                     $q->where('inventory_id', $valor->pivot->inventory_id);
                 })->orderBy('id', 'desc')->first();
 
-            $inventario = Inventario_piso_venta::with('inventario')->where('piso_venta_id', $usuario)->where('inventario_id', $producto->id)->orderBy('id', 'desc')->first(); 
+            $inventario = Inventario_piso_venta::with('inventario')->where('piso_venta_id', $usuario)->where('inventario_id', $producto->id)->orderBy('id', 'desc')->first();
 
             if ($inventario->id == null) {
                 $inventario = new Inventario_piso_venta();
@@ -109,7 +109,7 @@ class DespachosController extends Controller
             }else{
                 //SI ES UN DESPACHO O ES UN RETIRO
                 if($despacho->type == 1){
-                    
+
 
                         $inventario->cantidad += $valor->pivot->cantidad;
 
@@ -120,7 +120,7 @@ class DespachosController extends Controller
                 }
             }
             $inventario->save();
-        
+
         }
         */
 
@@ -138,11 +138,11 @@ class DespachosController extends Controller
 
     public function get_despachos_web(Request $request)//DEL LADO DE LA WEB
     {
-        
+
         $despachos = Despacho::with('productos', 'productos.product')->where('piso_venta_id', $request->piso_venta_id)->where('id_extra', '>', $request->ultimo_despacho)->get();
 
         return response()->json($despachos);
-        
+
     }
 
     public function registrar_despacho_piso_venta (Request $request)
@@ -150,7 +150,7 @@ class DespachosController extends Controller
         try{
 
             DB::beginTransaction();
-      
+
             foreach ($request->despachos as $despacho){
                 //REGISTRAMOS EL DESPACHO
                 $registro = new Despacho();
@@ -197,7 +197,7 @@ class DespachosController extends Controller
                         $precio->oferta = $producto['product']['oferta'];
                         $precio->inventario_id = $articulo->id;
                         $precio->save();
-                        //$precio->costo = 
+                        //$precio->costo =
                         //REGISTRA LA CANTIDAD EN EL INVENTARIO DEL PISO DE VENTA
                         /*
                         $inventario = new Inventario_piso_venta();
@@ -217,21 +217,21 @@ class DespachosController extends Controller
                         }
                         */
                     }
-                    
+
                 }
             }
 
             DB::commit();
 
             return response()->json(true);
-            
+
         }catch(Exception $e){
 
             DB::rollback();
             return response()->json($e);
         }
-        
-        
+
+
 
         return response()->json(true);
     }
@@ -248,10 +248,10 @@ class DespachosController extends Controller
         $despachos = [];
 
         foreach ($request->despachos as $valor) {
-        
+
             $despachos[] = Despacho::with('productos')->where('id_extra', $valor['id_extra'])->first();
         }
-    
+
 
         return response()->json($despachos);
     }
@@ -259,7 +259,7 @@ class DespachosController extends Controller
     public function actualizar_confirmaciones(Request $request)//DEL LADO DE LA WEB
     {
         foreach ($request->despachos as $valor) {
-            
+
             $despacho = Despacho::where('id_extra', $valor['id_extra'])->where('piso_venta_id', $request->piso_venta_id)->first();
             $despacho->confirmado = $valor['confirmado'];
             $despacho->save();
@@ -299,7 +299,7 @@ class DespachosController extends Controller
 
             DB::beginTransaction();
 
-            $despacho = new Despacho();	
+            $despacho = new Despacho();
             $despacho->piso_venta_id = $request->piso_venta;
             $despacho->type = 1;
             $despacho->save();
@@ -342,7 +342,7 @@ class DespachosController extends Controller
                     $precio->oferta = $producto['modelo']['product']['oferta'];
                     $precio->inventario_id = $articulo->id;
                     $precio->save();
-                    //$precio->costo = 
+                    //$precio->costo =
                     //REGISTRA LA CANTIDAD EN EL INVENTARIO DEL PISO DE VENTA
                     $inventario = new Inventario_piso_venta();
                     $inventario->inventario_id = $articulo->id;
@@ -382,7 +382,7 @@ class DespachosController extends Controller
 
             DB::beginTransaction();
 
-            $despacho = new Despacho(); 
+            $despacho = new Despacho();
             $despacho->piso_venta_id = $request->piso_venta;
             $despacho->type = 2;
             $despacho->save();
@@ -424,7 +424,7 @@ class DespachosController extends Controller
                     $precio->oferta = $producto['modelo']['product']['oferta'];
                     $precio->inventario_id = $articulo->id;
                     $precio->save();
-                    //$precio->costo = 
+                    //$precio->costo =
                     //REGISTRA LA CANTIDAD EN EL INVENTARIO DEL PISO DE VENTA
                     $inventario = new Inventario_piso_venta();
                     $inventario->inventario_id = $articulo->id;
@@ -450,7 +450,7 @@ class DespachosController extends Controller
             DB::commit();
 
             return response()->json($despacho);
-            
+
         }catch(Exception $e){
 
             DB::rollback();
