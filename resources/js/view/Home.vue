@@ -162,7 +162,9 @@
 
 					if (inventario.length > 0) {
 
-						axios.post('http://mipuchito.com/api/get-inventories', {inventario: inventario, piso_venta: this.id}).then(response => {
+						axios.post('http://mipuchito.com/api/get-inventories', {
+							inventario: inventario,
+							piso_venta: this.id  }).then(response => {
 
 							console.log(response);
 							let nuevoInventario = response.data;
@@ -172,7 +174,7 @@
 								console.log(response);
 								//ACTUALIZAMOS LOS PRECIOS
 
-								axios.get('http://mipuchito.com/api/get-precios-inventory/'+this.id).then(response => {//WdarkEB
+								axios.get('http://mipuchito.com/api/get-precios-inventory/'+this.id).then(response => {//WdEB
 
 									console.log(response)
 									let inventory = response.data.inventory

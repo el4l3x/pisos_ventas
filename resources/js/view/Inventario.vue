@@ -1,18 +1,49 @@
 <template>
 	<div>
-
 		<div class="container">
 			<!--ALERT DE EXITO-->
 		    <b-alert show variant="success" fade dismissible v-if="alert_success == true">{{alert_message}}</b-alert>
-		   <!---->
-			<div class="card shadow">
+		    <b-alert show variant="success" fade dismissible v-if="sincro_exitosa == true">sincronozacion exitosa</b-alert>
+		    <b-alert show variant="danger" fade dismissible v-if="error == true">{{error_mensaje}}</b-alert>
+
+			<div class="row">
+				<div class="col-md-3">
+					<div class="card shadow">
+						<div class="card-header text-center">
+							<span>sincronizar inventario</span>
+						</div>
+						<div class="card-body">
+							<div v-if="piso_venta_selected.length != 0" style="font-size: 1em;" class="mt-3">
+								<span><span class="font-weight-bold">Nombre:</span> {{piso_venta_selected.nombre}}</span> <br>
+								<span><span class="font-weight-bold">Lugar:</span> {{piso_venta_selected.ubicacion}}</span> <br>
+								<span><span class="font-weight-bold">Dinero:</span> {{piso_venta_selected.dinero}}</span> <br>
+
+							</div>
+								<hr>
+									<span class="font-weight-bold" > sincronizo : </span> <span v-if="sincronizacion !== null">{{sincronizacion}}</span> <br>
+									<!-- <span class="font-weight-bold" >Ultima vez que vacio la caja: </span><span  v-if="caja !== null">{{caja}}</span> <br> -->
+								<hr>
+							<button class="btn btn-primary btn-block" @click="sincronizar">
+
+							<span v-if="loading == false">Sincronizar</span>
+							<div class="spinner-border text-light text-center" role="status" v-if="loading == true">
+							  	<span class="sr-only">Loading...</span>
+							</div>
+							</button>
+
+							<!--<button class="btn btn-warning btn-block" @click="precios">Precios</button>-->
+					</div>
+				</div>
+			</div>
+			<div class="col-md-9">
+				<div class="card shadow">
 				<div class="card-body">
 					<h1 class="text-center">Inventario</h1>
 					<div class="mb-3 row justify-content-between">
 						<div class="col-md-3">
 							<!--<button class="btn btn-primary" type="button" @click="refrescar">Refrescar</button>-->
 						</div>
-						<div class="col-md-5">
+						<div class="col-md-7">
 							<div class="form-inline">
 								<div class="form-group">
 									<input type="text" v-model="search" class="form-control d-inline" placeholder="Buscar producto" @change="get_inventario">
@@ -121,6 +152,13 @@
 					</div>
 				</div>
 			</div>
+
+			</div>
+        </div>
+
+		   <!---->
+
+
 		</div>
 	</div>
 </template>
@@ -135,6 +173,11 @@
 		data(){
 			return{
 				productos: [],
+				sincronizacion:'',
+				loading:false,
+				id:'',
+				error: false,
+				piso_venta_selected:[],
 				page: "",
 				currentPage: 0,
 				per_page: 0,
@@ -142,10 +185,179 @@
 				alert_success: false,
 				alert_message: "",
 				id: 0,
-				search: null
+				search: null,
+				sincro_exitosa:false,
+				sincron:{
+		        	precios: false,
+		        	despachos: false,
+		        	ventas: false,
+		        	monto: false,
+		        	vaciar_caja: false,
+		        	anulados: false,
+		        	sincronizacion: false
+		        },
 			}
 		},
 		methods:{
+			sincronizar(){
+				this.sincron = {
+		        	precios: false,
+		        	despachos: false,
+		        	ventas: false,
+		        	monto: false,
+		        	vaciar_caja: false,
+		        	sincronizacion: false
+		        }
+
+		        this.error = false;
+
+		        this.loading = false;
+
+				this.cambiar()
+
+
+				//PRECIOS
+				//ULTIMO PRODUCTO DE INVENTORY REGISTRADO
+				axios.get('/api/ultimo-inventory').then(response => {
+					//console.log(response.data)
+					let ultimoInventory = response.data
+					//TRAEMOS DE LA WEB TODOS LOS PRODUCTOS APARTIR DEL ULTIMO ID
+					axios.get('http://mipuchito.com/api/get-inventory/'+ultimoInventory).then(response => {//WEB
+
+						//console.log(response)
+						let productos = response.data
+						//REGISTRAMOS LOS NUEVOS PRODUCTOS
+						if (productos.length > 0) {
+
+							console.log("hay que registrar")
+							axios.post('/api/registrar-inventory', {productos: productos}).then(response => {
+
+								if (response.data == true) {
+									console.log("productos registrados exitosamente")
+
+									//SINC
+									this.sincron.precios = true;
+								}
+							}).catch(e => {
+								console.log(e.response)
+								this.error = true;
+								this.cambiar()
+							});
+
+						}else{
+							console.log("no hay productos para registrar")
+						}
+
+						//ACTUALIZAMOS LOS PRECIOS
+						//ANCLAR PRODUCTOS A UN INVENTORY_ID
+						//OBTENEMOS DE LOS PISOS TODOS LOS QUE INVENTORY_ID == NUll
+						axios.get('/api/get-inventories-id').then(response => {
+							console.log(response);
+							let inventario = response.data;
+
+							if (inventario.length > 0) {
+								//LOS BUSCAMOS EN LA WEB A VER SI SE LE ASIGNO UN INVENTORY_ID
+								axios.post('http://mipuchito.com/api/get-inventories', {inventario: inventario, piso_venta: this.id}).then(response => {
+
+									console.log(response);
+									let nuevoInventario = response.data;
+									//ACTUALIZAMOS EN LOCAL LOS INVENTORY_ID
+									axios.post('/api/actualizar-inventory-id', {inventario: nuevoInventario}).then(response => {
+
+										console.log(response);
+										//ACTUALIZAMOS LOS PRECIOS
+
+										axios.get('http://mipuchito.com/api/get-precios-inventory/'+this.id).then(response => {//WEB
+
+											console.log(response)
+											let inventory = response.data.inventory
+											let inventario = response.data.inventario
+
+											axios.post('/api/actualizar-precios-inventory', {productos: inventory, precios: inventario}).then(response => {
+
+												console.log(response.data)
+												//SINC
+												this.sincron.precios = true;
+											}).catch(e => {
+												console.log(e.response)
+												this.error = true;
+												this.cambiar()
+											});
+										}).catch(e => {
+											console.log(e.response)
+											this.error = true;
+											this.cambiar()
+										});
+
+									}).catch(e => {
+										console.log(e.response)
+									});
+
+								}).catch(e => {
+									console.log(e.response)
+								});
+							}else{
+								console.log("no hay productos para anclar")
+								//ACTUALIZAMOS LOS PRECIOS
+
+								axios.get('http://mipuchito.com/api/get-precios-inventory/'+this.id).then(response => {//WEB
+
+									console.log(response)
+									let inventory = response.data.inventory
+									let inventario = response.data.inventario
+
+									axios.post('/api/actualizar-precios-inventory', {productos: inventory, precios: inventario}).then(response => {
+
+										console.log(response.data)
+										//SINC
+										this.sincron.precios = true;
+										this.get_inventario();
+			   							this.get_id();
+									 	this.cambiar()
+		       							this.sincro_exitosa = true
+									}).catch(e => {
+										console.log(e.response)
+										this.error = true;
+										this.cambiar()
+									});
+								}).catch(e => {
+									console.log(e.response)
+									this.error = true;
+									this.cambiar()
+								});
+							}
+						}).catch(e => {
+							console.log(e.response)
+						});
+					}).catch(e => {
+						console.log(e.response)
+						this.error = true;
+						this.cambiar()
+					});
+
+				}).catch(e => {
+					console.log(e.response)
+					this.error = true;
+					this.cambiar()
+				});
+
+
+		    },// fin del sincronizar
+		    cambiar(){
+				console.log("btn cambio")
+				this.loading = !this.loading;
+			},
+			get_piso_venta(){
+
+				axios.get('/api/get-piso-venta').then(response =>{
+					console.log(response)
+					this.piso_venta_selected = response.data.piso_venta;
+					this.sincronizacion = response.data.sincronizacion.created_at;
+
+				}).catch(e => {
+					console.log(e.response);
+				});
+			},
 			get_inventario(){
 
 				axios.get('/api/get-inventario', {params:{search: this.search}}).then(response => {
@@ -255,6 +467,7 @@
 			//console.log(this.productos)
 			this.get_inventario();
 			this.get_id();
+			this.get_piso_venta()
 
 		},
 

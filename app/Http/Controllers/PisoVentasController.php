@@ -25,10 +25,9 @@ class PisoVentasController extends Controller
     	return response()->json($piso_ventas);
     }
 
-    public function resumen()
+    public function resumen()// funcion carga el resumen de ventas compras despachos de la vista home
     {
         $usuario = Auth::user()->piso_venta->id;
-
     	$date = Carbon::now();
     	$mes = $date->month;
 
@@ -46,11 +45,11 @@ class PisoVentasController extends Controller
     }
 
     public function ventas_compras(Request $request)
-    {	
+    {
         $usuario = Auth::user()->piso_venta->id;
 
     	if ($request->fecha_i != 0 && $request->fecha_f != 0) {
-    		
+
     		$fecha_i = new Carbon($request->fecha_i);
     		$fecha_f = new Carbon($request->fecha_f);
 
@@ -69,17 +68,17 @@ class PisoVentasController extends Controller
     public function despachos_retiros($id, Request $request)
     {
     	if ($request->fecha_i != 0 && $request->fecha_f != 0) {
-    		
+
     		$fecha_i = new Carbon($request->fecha_i);
     		$fecha_f = new Carbon($request->fecha_f);
 
-    		$despachos = Despacho::with('productos')->where('piso_venta_id', $id)->whereDate('created_at','>=', $fecha_i)->whereDate('created_at','<=', $fecha_f)->orderBy('id', 'desc')->paginate(1);
+    		$despachos = Despacho::with('productos')->where('piso_venta_id', $id)->whereDate('created_at','>=', $fecha_i)->whereDate('created_at','<=', $fecha_f)->orderBy('id', 'desc')->paginate(10);
     	}else{
 
 	    	$date = Carbon::now();
 	    	$mes = $date->month;
 
-	    	$despachos = Despacho::with('productos')->where('piso_venta_id', $id)->whereMonth('created_at', $mes)->orderBy('id', 'desc')->paginate(1);
+	    	$despachos = Despacho::with('productos')->where('piso_venta_id', $id)->whereMonth('created_at', $mes)->orderBy('id', 'desc')->paginate(10);
     	}
     	return response()->json($despachos);
     }
@@ -87,7 +86,7 @@ class PisoVentasController extends Controller
     public function productos_piso_venta($id)
     {
 
-    	$productos = Inventario_piso_venta::with('inventario.precio')->where('piso_venta_id', $id)->orderBy('cantidad', 'desc')->paginate(1);
+    	$productos = Inventario_piso_venta::with('inventario.precio')->where('piso_venta_id', $id)->orderBy('cantidad', 'desc')->paginate(10);
 
     	return response()->json($productos);
     }
