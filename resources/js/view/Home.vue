@@ -417,6 +417,11 @@
 
 				//DESPACHOS
 
+
+
+
+
+
 				let ultimoDespacho = 0;
 				let nuevosDespachos = [];
 				let despachosSinConfirmar = [];
@@ -513,6 +518,10 @@
 					this.error = true;
 					this.cambiar()
 				})
+
+
+
+
 
 				//VENTAS
 

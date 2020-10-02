@@ -1,10 +1,42 @@
 <template>
 	<div>
 		<div class="container">
+			 <b-alert show variant="success" fade dismissible v-if="alert_success == true">{{alert_message}}</b-alert>
 
-			<!--ALERT DE EXITO-->
-		    <b-alert show variant="success" fade dismissible v-if="alert_success == true">{{alert_message}}</b-alert>
-		   <!---->
+		    <b-alert show variant="success" fade dismissible v-if="sincro_exitosa == true">sincronozacion exitosa</b-alert>
+
+		    <b-alert show variant="danger" fade dismissible v-if="error == true">ah ocurrido un error</b-alert>
+
+		    <div class="row">
+		    	<div class="col-md-3">
+					<div class="card shadow">
+						<div class="card-header text-center">
+							<span>sincronizar Despachos</span>
+						</div>
+						<div class="card-body">
+							<div v-if="piso_venta_selected.length != 0" style="font-size: 1em;" class="mt-3">
+								<span><span class="font-weight-bold">Nombre:</span> {{piso_venta_selected.nombre}}</span> <br>
+								<span><span class="font-weight-bold">Lugar:</span> {{piso_venta_selected.ubicacion}}</span> <br>
+								<span><span class="font-weight-bold">Dinero:</span> {{piso_venta_selected.dinero}}</span> <br>
+
+							</div>
+								<hr>
+									<span class="font-weight-bold" > sincronizo : </span> <span v-if="sincronizacion !== null">{{sincronizacion}}</span> <br>
+									<!-- <span class="font-weight-bold" >Ultima vez que vacio la caja: </span><span  v-if="caja !== null">{{caja}}</span> <br> -->
+								<hr>
+							<button class="btn btn-primary btn-block" @click="sincronizar">
+
+							<span v-if="loading == false">Sincronizar</span>
+							<div class="spinner-border text-light text-center" role="status" v-if="loading == true">
+							  	<span class="sr-only">Loading...</span>
+							</div>
+							</button>
+
+							<!--<button class="btn btn-warning btn-block" @click="precios">Precios</button>-->
+					</div>
+				</div>
+			</div>
+		    <div class="col-md-9">
 			<div class="card shadow">
 				<div class="card-body">
 					<h1 class="text-center">Despachos-pisos</h1>
@@ -89,6 +121,8 @@
 					</div>
 				</div>
 			</div>
+			</div>
+			</div>
 		</div>
 	</div>
 </template>
@@ -99,14 +133,148 @@
 			return{
 				despachos: [],
 				currentPage: 0,
+				loading:false,
 				per_page: 0,
+				sincronizacion:'',
 				total_paginas: 0,
 				id: 0,
+				piso_venta_selected:[],
 				alert_success: false,
-				alert_message : ""
+				alert_message : "",
+				alert_success:false,
+				sincro_exitosa:false,
+				error:false,
+					sincron:{
+		        	precios: false,
+		        	despachos: false,
+		        	ventas: false,
+		        	monto: false,
+		        	vaciar_caja: false,
+		        	anulados: false,
+		        	sincronizacion: false
+		        },
 			}
 		},
 		methods:{
+			sincronizar(){
+				this.error=false
+				this.cambiar()
+				this.sincro_exitosa = false
+				let ultimoDespacho = 0;
+				let nuevosDespachos = [];
+				let despachosSinConfirmar = [];
+				let despachosConfirmados = [];
+				//ULTIMO DESPACHO RECIBIDO
+				axios.get('/api/ultimo-despacho').then(response => {
+
+					//console.log(response)
+					//SI SE TRAJO ALGUN DESPACHO, ESTO QUITA EL ERROR DE LA PRIMERA VEZ YA QUE NO ABRA NINGUN REGISTRO previo
+					if (response.data.id_extra != null) {
+						ultimoDespacho = response.data.id_extra;
+					}
+
+
+					//SOLICITAR DESPACHOS NUEVOS (para eso necesito el ultimo despacho recibido)
+					axios.post('http://mipuchito.com/api/get-despachos-web', {piso_venta_id: this.id, ultimo_despacho: ultimoDespacho}).then(response => {//DEL LADO DE LA WEB
+
+						nuevosDespachos = response.data;
+						console.log(nuevosDespachos)
+						/*
+						if (nuevosDespachos.id == null) {
+						console.log(nuevosDespachos)
+						}else{
+							console.log("hay algo")
+						}
+						*/
+						if (nuevosDespachos.length > 0) {
+
+							//REGISTRAR LOS DESPACHOS RECIBIDOS
+							axios.post('/api/registrar-despachos-piso-venta', {despachos: nuevosDespachos}).then(response => {//
+
+								console.log(response);//SI REGISTRA DEBERIA DAR TRUE
+								if (response.data == true) {
+
+									//SINC
+									this.sincron.despachos = true;
+								}
+							}).catch(e => {
+								console.log(e.response)
+								this.error = true;
+								this.cambiar()
+							});
+
+						}else{
+
+
+						//SINC
+						this.sincron.despachos = true;
+						}
+						//PEDIR DE LA WEB LOS DESPACHOS QUE NO ESTAN CONFIRMADOS
+						axios.get('http://mipuchito.com/api/get-despachos-sin-confirmacion/'+this.id).then(response => {//DEL LADO DE LA WEB
+
+						despachosSinConfirmar = response.data;
+						//console.log(response.data);
+						if (despachosSinConfirmar.length > 0) {
+							//PEDIR LOS DATOS EN LOCAL DE LOS QUE NO ESTAN CONFIRMADOS EN LA WEB
+							axios.post('/api/get-despachos-confirmados', {despachos: despachosSinConfirmar}).then(response => {//
+
+								despachosConfirmados = response.data
+								//console.log(response.data);
+								//GUARDAR LOS DATOS ANTERIORES EN LA WEB
+								axios.post('http://mipuchito.com/api/actualizar-confirmados', {despachos: despachosConfirmados, piso_venta_id: this.id}).then(response => {//DEL LADO DE LA WEB PARA ACTUALIZAR LAS CONFIRMACIONES
+									this.cambiar()
+									this.sincro_exitosa = true
+								console.log(response);
+								//SINC
+								this.sincron.despachos = true;
+								}).catch(e => {
+									console.log(e.response)
+									this.error = true;
+									this.cambiar()
+								});
+
+							}).catch(e => {
+								console.log(e.response)
+								this.error = true;
+								this.cambiar()
+							});
+						}
+
+						}).catch(e => {
+							console.log(e.response)
+							this.error = true;
+							this.cambiar()
+						});
+
+					}).catch(e => {
+						console.log(e.response);
+						this.error = true;
+						this.cambiar()
+					})
+
+				}).catch(e => {
+					console.log(e.response);
+					this.error = true;
+					this.cambiar()
+				})
+
+
+			},
+			cambiar(){
+				console.log("btn cambio")
+				this.loading = !this.loading;
+			},
+			get_piso_venta(){
+
+				axios.get('/api/get-piso-venta').then(response =>{
+					console.log(response)
+					this.piso_venta_selected = response.data.piso_venta;
+					this.sincronizacion = response.data.sincronizacion.created_at;
+
+				}).catch(e => {
+					console.log(e.response);
+				});
+			},
 			get_despachos(){
 
 				axios.get('/api/get-despachos').then(response => {
@@ -279,6 +447,7 @@
 
 			this.get_despachos()
 			this.get_id()
+			this.get_piso_venta()
 		}
 	}
 </script>
