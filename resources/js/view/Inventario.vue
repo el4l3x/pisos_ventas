@@ -463,7 +463,7 @@
 				});
 			}
 		},
-		created(){
+		mounted(){
 			//console.log(this.productos)
 			this.get_inventario();
 			this.get_id();

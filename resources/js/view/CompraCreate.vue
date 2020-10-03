@@ -8,20 +8,20 @@
 				<select name="metodo" id="metodo" class="form-control" v-model="metodo">
 					<option value="">Seleecione el modo de establecer el producto</option>
 					<option value="1">Producto ya existente</option>
-					<option value="2">Registrar producto</option>				
+					<option value="2">Registrar producto</option>
 				</select>
-				{{articulo_compra}}
+
 				<div >
 					<hr>
 					<div class="form-row" v-if="metodo == 1">
-						
+
 						<div class="form-group col-md-4">
 							<label for="producto">Producto:</label>
 						    <select class="form-control" v-model="articulo_compra.id" @change="establecer_nombre(articulo_compra.id, 'compra')">
 							  <option value="0">Seleecion producto</option>
 							  <option v-for="(prod, index) in inventario_compra" :key="index" :value="prod.inventario.id">{{prod.inventario.name}}</option>
 							</select>
-							
+
 						</div>
 
 						<div class="form-group col-md-4">
@@ -34,11 +34,11 @@
 							<button class="btn btn-primary btn-block" type="button" @click="agregar_producto('compra')">Agregar</button>
 						</div>
 					</div>
-					
+
 					<!---->
 
 					<div v-if="metodo == 2">
-						
+
 						<hr>
 						<div class="row">
 							<div class="col-md-4">
@@ -129,9 +129,9 @@
 								    <input type="number" class="form-control" id="total" placeholder="350000" v-model.number="articulo_compra.total" disabled>
 								    <span class="" v-show="false">{{total_comprar}}</span>
 								</div>
-							-->	
+							-->
 							</div>
-							
+
 							<div class="col-md-3 mb-3">
 								<label >Acción:</label>
 								<button type="button" class="btn btn-primary btn-block" @click="agregar_producto('compra')" :disabled="disabled_compra">Agregar</button>
@@ -200,7 +200,7 @@
 
 				<div class="row">
 	      			<div class="col-md-7">
-	      				
+
 	      			</div>
 
 	      			<div class="col-md-2 text-right">
@@ -217,9 +217,9 @@
 		   				<br>
 		      			<span class="small">{{total_total_comprar}}</span>
 	      			</div>
-	      			
+
 	      		</div>
-	      	
+
 		      	<div class="modal-footer">
 		        	<button type="submit" class="btn btn-danger" @click="comprar" :disabled="productos_comprar <= 0">Compra</button>
 		      	</div>
@@ -229,7 +229,7 @@
 </template>
 
 <script>
-	
+
 	export default{
 		data(){
 			return{
@@ -268,17 +268,17 @@
 					this.articulo_compra.total *= this.articulo_compra.cantidad
 
 					this.productos_comprar.push(this.articulo_compra);
-						
+
 					//console.log(this.productos)
 					this.articulo_compra = {nombre: "", cantidad: "", sub_total: "", iva: "", total: "", unidad: "", costo: null, iva_porc: null, margen_ganancia: null};
 				}else{
-				
+
 					this.articulo.sub_total *= this.articulo.cantidad
 					this.articulo.iva *= this.articulo.cantidad
 					this.articulo.total *= this.articulo.cantidad
 
 					this.productos.push(this.articulo);
-						
+
 					//console.log(this.productos)
 					this.articulo = {id: 0, nombre: "", cantidad: "", sub_total: "", iva: "", total: ""};
 				}
@@ -289,7 +289,7 @@
 				}else{
 					this.productos.splice(index, 1);
 				}
-				
+
 			},
 			comprar(){
 
@@ -300,12 +300,12 @@
 						//this.articulo_compra = {nombre: "", cantidad: "", sub_total: "", iva: "", total: "", unidad: "", costo: null, iva_porc: null, margen_ganancia: null};
 						//this.ventas.splice(0,0, response.data);
 						//this.productos_comprar = [];
-								
+
 				}).catch(e => {
 
 					console.log(e.response)
 				})
-				
+
 				this.$bvModal.hide("modal-compra")
 			},
 			get_datos(){
@@ -324,24 +324,24 @@
 
 					let resultado = this.inventario_compra.find(element => element.inventario.id == id)
 					this.articulo_compra.nombre = resultado.inventario.name;
-					
+
 					this.articulo_compra.sub_total = resultado.inventario.precio.sub_total_menor
 					this.articulo_compra.iva = resultado.inventario.precio.iva_menor
 					this.articulo_compra.total = resultado.inventario.precio.total_menor
 
-					
+
 					console.log(this.articulo_compra);
 				}else{
 
 					let resultado = this.inventario.find(element => element.inventario.id == id)
 					this.articulo.nombre = resultado.inventario.name;
-					
+
 					this.articulo.sub_total = resultado.inventario.precio.sub_total_menor
 					this.articulo.iva = resultado.inventario.precio.iva_menor
 					this.articulo.total = resultado.inventario.precio.total_menor
-					
+
 					this.cantidad_disponible = resultado.cantidad;
-					
+
 					console.log(this.articulo);
 				}
 
@@ -380,7 +380,7 @@
 
 				})
 				this.sub_total_de_compra = subtotal;
-				
+
 				return subtotal;
 			},
 			iva_total_total_comprar(){

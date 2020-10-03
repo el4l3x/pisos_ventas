@@ -23,6 +23,39 @@
 		    <!--ALERT DE EXITO-->
 		    <b-alert show variant="success" fade dismissible v-if="alert_success == true">{{alert_message}}</b-alert>
 		   <!---->
+		    <b-alert show variant="success" fade dismissible v-if="sincro_exitosa == true">sincronozacion exitosa</b-alert>
+		    <b-alert show variant="danger" fade dismissible v-if="error == true">ah ocurido un error</b-alert>
+
+		    <div class="row">
+		    	<div class="col-md-3">
+					<div class="card shadow">
+						<div class="card-header text-center">
+							<span>sincronizar inventario</span>
+						</div>
+						<div class="card-body">
+							<div v-if="piso_venta_selected.length != 0" style="font-size: 1em;" class="mt-3">
+								<span><span class="font-weight-bold">Nombre:</span> {{piso_venta_selected.nombre}}</span> <br>
+								<span><span class="font-weight-bold">Lugar:</span> {{piso_venta_selected.ubicacion}}</span> <br>
+								<span><span class="font-weight-bold">Dinero:</span> {{piso_venta_selected.dinero}}</span> <br>
+
+							</div>
+								<hr>
+									<span class="font-weight-bold" > sincronizo : </span> <span v-if="sincronizacion !== null">{{sincronizacion}}</span> <br>
+									<!-- <span class="font-weight-bold" >Ultima vez que vacio la caja: </span><span  v-if="caja !== null">{{caja}}</span> <br> -->
+								<hr>
+							<button class="btn btn-primary btn-block" @click="sincronizar">
+
+							<span v-if="loading == false">Sincronizar</span>
+							<div class="spinner-border text-light text-center" role="status" v-if="loading == true">
+							  	<span class="sr-only">Loading...</span>
+							</div>
+							</button>
+
+							<!--<button class="btn btn-warning btn-block" @click="precios">Precios</button>-->
+					</div>
+				</div>
+			</div>
+		  <div class="col-md-9">
 
 			<div class="card shadow">
 				<div class="card-body">
@@ -453,7 +486,8 @@
 
 					</b-modal>
 
-
+					  </div>
+					    </div>
 				</div>
 			</div>
 		</div>
@@ -465,6 +499,9 @@
 		data(){
 			return{
 				ventas: [],
+				piso_venta_selected:[],
+					loading:false,
+					sincronizacion:'',
 				inventario: [],
 				productos: [],//LISTA DE PRODUCTOS QUE VOY A AGREGAR
 				articulo: {
@@ -490,6 +527,8 @@
 		        dismissCountDown: 0,
 		        showDismissibleAlert: false,
 		        alert_success: false,
+		        sincro_exitosa:false,
+				error:false,
 		        alert_message: "",
 		        inventario_compra: [],
 		        articulo_compra: {
@@ -515,6 +554,145 @@
 			}
 		},
 		methods:{
+			sincronizar(){
+				this.cambiar()
+				//VENTAS
+
+				//OBTENEMOS MI ID DE PISO DE VENTA
+				axios.get('/api/get-piso-venta-id').then(response => {
+					let piso_venta_id = response.data;
+					//console.log(piso_venta_id)
+					//OBTENEMOS DE LA WEB LA ULTIMA VENTA QUE TIENE REGISTRADA CON NUESTRO PISO DE VENTA
+					axios.get('http://mipuchito.com/api/ultima-venta/'+piso_venta_id).then(response => {//WEB
+
+						let ultima_venta = response.data.id_extra
+						//console.log(ultima_venta)
+
+						//OBTENEMOS TODAS LAS VENTAS QUE SEAN MAYOR AL ID_EXTRA QUE ACABO DE CONSEGUIR
+						axios.get('/api/ventas-sin-registrar/'+piso_venta_id+'/'+ultima_venta).then(response => {
+
+							console.log(response.data)
+							let ventas = response.data
+							//VALIDACION SI TRAJO ALGUNA VENTA
+							if (ventas.length > 0) {
+
+
+							//EN ESE CASO REGISTRAMOS LAS VENTAS EN LA WEB
+							axios.post('http://mipuchito.com/api/registrar-ventas', {ventas: ventas, piso_venta_id: piso_venta_id}).then(response => {
+
+								console.log(response.data)
+								if (response.data == true) {
+
+									//SINC
+									this.sincron.ventas = true;
+									this.sync_anulados();
+								}else{
+
+									//this.showAlert();
+								}
+							}).catch(e => {
+								console.log(e.response)
+								this.error = true;
+								this.cambiar()
+							})
+							}else{
+
+								//SINC
+								this.sincron.ventas = true;
+								this.sync_anulados();
+							}
+						}).catch(e => {
+							console.log(e.response)
+							this.error = true;
+							this.cambiar()
+						})
+					}).catch(e => {
+						console.log(e.response)
+						this.error = true;
+						this.cambiar()
+					})
+
+				}).catch(e => {
+					console.log(e.response)
+					this.error = true;
+					this.cambiar()
+				});
+
+				//ACTUALIZAR MONTO EN LA WEB
+				axios.put('http://mipuchito.com/api/actualizar-dinero-piso-venta/'+this.productos.id, {dinero: this.piso_venta_selected.dinero}).then(response => {//EN LA WEB
+
+					console.log(response);
+					//SINC
+					this.sincron.monto = true;
+				}).catch(e => {
+
+					console.log(e.response);
+					this.error = true;
+					this.cambiar()
+				});
+
+				//ACTUALIZAR VACIADAS DE CAJA
+
+				//SOLICITAMOS EL ULTIMO QUE TENGA
+				axios.get('http://mipuchito.com/api/ultima-vaciada-caja/'+this.id).then(response => {//WEB
+					console.log(response)
+					let ultima_caja = response.data;
+					if(ultima_caja == null){
+						ultima_caja = 0;
+					}
+					//SOLICITAMOS LAS VACIADAS QUE TENGO EN LOCAL
+					axios.get('/api/ultima-vaciada-caja-local/'+ultima_caja.id_extra).then(response => {
+
+						console.log(response)
+						let cajas = response.data;
+
+						if (cajas.length > 0) {
+
+							axios.post('http://mipuchito.com/api/registrar-cajas', {cajas: cajas}).then(response => {//WEB
+
+								console.log(response)
+								//SINC
+								this.sincron.vaciar_caja = true;
+							}).catch(e => {
+								console.log(e.response)
+								this.error = true;
+								this.cambiar()
+							});
+						}else{
+
+						//SINC
+						this.sincron.vaciar_caja = true;
+
+						}
+					}).catch(e => {
+
+					console.log(e.response)
+					this.error = true;
+					this.cambiar()
+					});
+				}).catch(e => {
+
+					console.log(e.response)
+					this.error = true;
+					this.cambiar()
+				});
+
+			},
+			cambiar(){
+				console.log("btn cambio")
+				this.loading = !this.loading;
+			},
+			get_piso_venta(){
+
+				axios.get('/api/get-piso-venta').then(response =>{
+					console.log(response)
+					this.piso_venta_selected = response.data.piso_venta;
+					this.sincronizacion = response.data.sincronizacion.created_at;
+
+				}).catch(e => {
+					console.log(e.response);
+				});
+			},
 			get_ventas(){
 
 				axios.get('/api/get-ventas').then(response => {
@@ -926,6 +1104,7 @@
 		created(){
 
 			this.get_ventas();
+			this.get_piso_venta()
 		}
 	}
 </script>
