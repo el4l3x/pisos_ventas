@@ -16,20 +16,20 @@
 
 						</div>
 							<hr>
-							<span class="font-weight-bold" >Ultima vez que sincronizo: </span> <span v-if="sincronizacion !== null">{{sincronizacion}}</span> <br>
+							<!-- <span class="font-weight-bold" >Ultima vez que sincronizo: </span> <span v-if="sincronizacion !== null">{{sincronizacion}}</span> <br> -->
 							<span class="font-weight-bold" >Ultima vez que vacio la caja: </span><span  v-if="caja !== null">{{caja}}</span> <br>
 							<hr>
 
 							<button type="button" class="btn btn-danger btn-block mb-2" data-toggle="modal" data-target="#vaciar-caja">
 							Vaciar caja
 							</button>
-							<button class="btn btn-primary btn-block" @click="sincronizar">
+							<!-- <button class="btn btn-primary btn-block" @click="sincronizar">
 
 							<span v-if="loading == false">Sincronizar</span>
 							<div class="spinner-border text-light text-center" role="status" v-if="loading == true">
 							  	<span class="sr-only">Loading...</span>
 							</div>
-							</button>
+							</button> -->
 
 							<!--<button class="btn btn-warning btn-block" @click="precios">Precios</button>-->
 					</div>

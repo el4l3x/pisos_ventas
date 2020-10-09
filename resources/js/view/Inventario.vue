@@ -4,7 +4,7 @@
 			<!--ALERT DE EXITO-->
 		    <b-alert show variant="success" fade dismissible v-if="alert_success == true">{{alert_message}}</b-alert>
 		    <b-alert show variant="success" fade dismissible v-if="sincro_exitosa == true">sincronozacion exitosa</b-alert>
-		    <b-alert show variant="danger" fade dismissible v-if="error == true">{{error_mensaje}}</b-alert>
+		    <b-alert show variant="danger" fade dismissible v-if="error == true">ah ocurrido un error</b-alert>
 
 			<div class="row">
 				<div class="col-md-3">
