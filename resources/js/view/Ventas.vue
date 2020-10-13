@@ -614,14 +614,15 @@ export default{
 					let piso_venta_id = response.data;
 					//console.log(piso_venta_id)
 					//OBTENEMOS DE LA WEB LA ULTIMA VENTA QUE TIENE REGISTRADA CON NUESTRO PISO DE VENTA
+					console.log('primera peticion')
 					axios.get('http://mipuchito.com/api/ultima-venta/'+piso_venta_id).then(response => {//WEB
-
+						console.log('segunda peticion')
 						let ultima_venta = response.data.id_extra
 						//console.log(ultima_venta)
 
 						//OBTENEMOS TODAS LAS VENTAS QUE SEAN MAYOR AL ID_EXTRA QUE ACABO DE CONSEGUIR
 						axios.get('/api/ventas-sin-registrar/'+piso_venta_id+'/'+ultima_venta).then(response => {
-
+							console.log('tercera peticion')
 							console.log(response.data)
 							let ventas = response.data
 							//VALIDACION SI TRAJO ALGUNA VENTA
@@ -630,7 +631,7 @@ export default{
 
 							//EN ESE CASO REGISTRAMOS LAS VENTAS EN LA WEB
 							axios.post('http://mipuchito.com/api/registrar-ventas', {ventas: ventas, piso_venta_id: piso_venta_id}).then(response => {
-
+								console.log('cuarta peticion')
 								console.log(response.data)
 								if (response.data == true) {
 
@@ -671,7 +672,7 @@ export default{
 
 				//ACTUALIZAR MONTO EN LA WEB
 				axios.put('http://mipuchito.com/api/actualizar-dinero-piso-venta/'+this.id, {dinero: this.piso_venta_selected.dinero}).then(response => {//EN LA WEB
-
+					console.log('5ta peticion')
 					console.log(response);
 					//SINC
 					this.sincron.monto = true;
@@ -686,6 +687,7 @@ export default{
 
 				//SOLICITAMOS EL ULTIMO QUE TENGA
 				axios.get('http://mipuchito.com/api/ultima-vaciada-caja/'+this.id).then(response => {//WEB
+					console.log('6ta peticion')
 					console.log(response)
 					let ultima_caja = response.data;
 					if(ultima_caja == null){
@@ -693,17 +695,18 @@ export default{
 					}
 					//SOLICITAMOS LAS VACIADAS QUE TENGO EN LOCAL
 					axios.get('/api/ultima-vaciada-caja-local/'+ultima_caja.id_extra).then(response => {
-
+						console.log('7 peticion')
 						console.log(response)
 						let cajas = response.data;
 
 						if (cajas.length > 0) {
 
 							axios.post('http://mipuchito.com/api/registrar-cajas', {cajas: cajas}).then(response => {//WEB
-
+								console.log('8 peticion')
 								console.log(response)
 								//SINC
 								this.sincron.vaciar_caja = true;
+								window.location="http://127.0.0.1:8000/ventas";
 							}).catch(e => {
 								console.log(e.response)
 								this.error = true;

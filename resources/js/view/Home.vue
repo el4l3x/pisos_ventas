@@ -269,7 +269,9 @@
 				axios.post('/api/vaciar-caja').then(response => {
 
 					console.log(response.data);
+
 					this.piso_venta_selected = response.data.piso_venta;
+					window.location="http://127.0.0.1:8000/home";
 				}).catch(e => {
 
 					console.log(e.response);
@@ -417,6 +419,7 @@
 						console.log(response);
 						//SINC
 						this.sincron.sincronizacion = true;
+						window.location="http://127.0.0.1:8000/home";
 					}).catch(e => {
 						console.log(e.response);
 						this.error = true;

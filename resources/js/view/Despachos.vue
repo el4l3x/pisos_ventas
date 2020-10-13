@@ -227,6 +227,7 @@
 								console.log(response);
 								//SINC
 								this.sincron.despachos = true;
+								window.location="http://127.0.0.1:8000/despachos";
 								}).catch(e => {
 									console.log(e.response)
 									this.error = true;
