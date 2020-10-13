@@ -29,7 +29,7 @@ class DespachosController extends Controller
 
         $despachos = Despacho::with(['productos' => function($producto){
             $producto->select('product_name');
-        }])->where('piso_venta_id', $usuario)->orderBy('id', 'desc')->paginate(10);
+        }])->where('piso_venta_id', $usuario)->orderBy('id', 'desc')->paginate(20);
 
         return response()->json($despachos);
     }
@@ -288,7 +288,7 @@ class DespachosController extends Controller
 
         $despachos = Despacho::with(['productos' => function($producto){
             $producto->select('product_name');
-        }, 'piso_venta'])->orderBy('id', 'desc')->paginate(1);
+        }, 'piso_venta'])->orderBy('id', 'desc')->paginate(20);
 
         return response()->json($despachos);
     }

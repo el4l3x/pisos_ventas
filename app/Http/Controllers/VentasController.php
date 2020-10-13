@@ -39,14 +39,14 @@ class VentasController extends Controller
     	$usuario = Auth::user()->piso_venta->id;
 
     	if ($request->fecha_i != 0 && $request->fecha_f != 0) {
-    		
+
     		$fecha_i = new Carbon($request->fecha_i);
     		$fecha_f = new Carbon($request->fecha_f);
 
-    		$ventas = Venta::with(['detalle'])->where('piso_venta_id', $usuario)->whereDate('created_at','>=', $fecha_i)->whereDate('created_at','<=', $fecha_f)->orderBy('id', 'desc')->paginate(1);
+    		$ventas = Venta::with(['detalle'])->where('piso_venta_id', $usuario)->whereDate('created_at','>=', $fecha_i)->whereDate('created_at','<=', $fecha_f)->orderBy('id', 'desc')->paginate(20);
     	}else{
 
-    		$ventas = Venta::with(['detalle'])->where('piso_venta_id', $usuario)->orderBy('id', 'desc')->paginate(1);
+    		$ventas = Venta::with(['detalle'])->where('piso_venta_id', $usuario)->orderBy('id', 'desc')->paginate(20);
     	}
 
         return response()->json($ventas);
@@ -66,9 +66,9 @@ class VentasController extends Controller
     {
     	$usuario = Auth::user()->piso_venta->id;
     	try{
-
+    		// return $request;
 			DB::beginTransaction();
-	    	$venta = new Venta();	
+	    	$venta = new Venta();
 	        $venta->piso_venta_id = $usuario;
 	        $venta->type = 1; // 1 ES VENTA
 	        $venta->sub_total = $request->venta['sub_total'];
@@ -100,7 +100,7 @@ class VentasController extends Controller
 
 	            	return response()->json(['errors' => 'no hay suficientes productos en el inventario']);
 	            	DB::rollback();
-	            	
+
 	            }
 
 	            $inventario->save();
@@ -116,7 +116,7 @@ class VentasController extends Controller
 	        $venta = Venta::with('detalle')->findOrFail($venta->id);
 
 	        return response()->json($venta);
-	    	
+
 		}catch(Exception $e){
 
 			DB::rollback();
@@ -130,7 +130,7 @@ class VentasController extends Controller
     	try{
 
 			DB::beginTransaction();
-	    	$venta = new Venta();	
+	    	$venta = new Venta();
 	        $venta->piso_venta_id = $usuario;
 	        $venta->type = 2; // 1 ES VENTA 2 ES COMPRA
 	        $venta->sub_total = 0;
@@ -199,7 +199,7 @@ class VentasController extends Controller
 	            //CODIGO VIEJO
 	            /*
 	            DB::beginTransaction();
-		    	$venta = new Venta();	
+		    	$venta = new Venta();
 		        $venta->piso_venta_id = $usuario;
 		        $venta->type = 2; // 1 ES VENTA 2 ES COMPRA
 		        $venta->sub_total = $request->venta['sub_total'];
@@ -259,7 +259,7 @@ class VentasController extends Controller
 	        $venta = Venta::with('detalle')->findOrFail($venta->id);
 
 	        return response()->json($venta);
-	    	
+
 		}catch(Exception $e){
 
 			DB::rollback();
@@ -294,7 +294,7 @@ class VentasController extends Controller
 	    	foreach($venta->detalle as $producto){
 
 	    		$inventario = Inventario_piso_venta::where('piso_venta_id', $usuario)->where('inventario_id', $producto->id)->orderBy('id', 'desc')->first();
-	    		
+
 		    	if ($venta->type == 1) {
 
 		    	$inventario->cantidad += $producto->pivot->cantidad;
@@ -306,7 +306,7 @@ class VentasController extends Controller
 		    	}
 
 		    	$inventario->save();
-		    	
+
 		    }
 
 		    DB::commit();
@@ -345,13 +345,13 @@ class VentasController extends Controller
 
     public function registrar_ventas(Request $request) //WEB
     {
-    	
+
     	try{
 
 			DB::beginTransaction();
 			foreach ($request->ventas as $valor) {
 
-		    	$venta = new Venta();	
+		    	$venta = new Venta();
 		        $venta->piso_venta_id = $request->piso_venta_id;
 		        $venta->type = $valor['type'];
 		        $venta->sub_total = $valor['sub_total'];
@@ -380,7 +380,7 @@ class VentasController extends Controller
                         $articulo->save();
                         $detalles->inventario_id = $articulo->id;
 		            }
-		            
+
 		            $detalles->sub_total = $producto['pivot']['sub_total'];
 			        $detalles->iva = $producto['pivot']['iva'];
 			        $detalles->total = $producto['pivot']['total'];
@@ -391,7 +391,7 @@ class VentasController extends Controller
 		            	//$q->where('inventory_id', $producto['inventory_id']);
 		            })->orderBy('id', 'desc')->first();
 		            //SI NO ENCUENTRA EL PRODUCTO QUE LO REGISTRE
-		            
+
 		            if ($inventario->id == null) {
                         //REGISTRA LA CANTIDAD EN EL INVENTARIO DEL PISO DE VENTA
                         $inventario = new Inventario_piso_venta();
@@ -400,7 +400,7 @@ class VentasController extends Controller
                         $inventario->cantidad = $producto['pivot']['cantidad'];
                         $inventario->save();
                     }else{
-					
+
                     //SI ES UNA VENTA O UNA COMPRA
 	                    if ($venta->type == 1) {
 
@@ -408,7 +408,7 @@ class VentasController extends Controller
 	                    }else if ($venta->type == 2){
 	                    	$inventario->cantidad += $producto['pivot']['cantidad'];
 	                    }
-		            }	
+		            }
 		            //
 		            //VALICACION POR SI NO HAY SUFICIENTES PRODUCTOS
 		            /*
@@ -416,7 +416,7 @@ class VentasController extends Controller
 
 		            	return response()->json(['errors' => 'no hay suficientes productos en el inventario']);
 		            	DB::rollback();
-		            	
+
 		            }
 		            */
 
@@ -427,7 +427,7 @@ class VentasController extends Controller
 	        DB::commit();
 
 	        return response()->json(true);
-	    	
+
 		}catch(Exception $e){
 
 			DB::rollback();
@@ -447,7 +447,7 @@ class VentasController extends Controller
     public function actualizar_anulados(Request $request)//WEB
     {
     	foreach ($request->ventas as $venta) {
-    		
+
     		$web = Venta::where('id_extra', $venta['id_extra'])->where('piso_venta_id', $request->piso_venta)->orderBy('id', 'desc')->first();
     		$web->anulado = 1;
     		$web->save();
@@ -455,7 +455,7 @@ class VentasController extends Controller
     		foreach($web->detalle as $producto){
 
 	    		$inventario = Inventario_piso_venta::where('piso_venta_id', $request->piso_venta)->where('inventario_id', $producto->id)->orderBy('id', 'desc')->first();
-	    		
+
 		    	if ($web->type == 1) {
 
 		    	$inventario->cantidad += $producto->pivot->cantidad;
@@ -467,7 +467,7 @@ class VentasController extends Controller
 		    	}
 
 		    	$inventario->save();
-		    	
+
 		    }
     	}
 
@@ -481,7 +481,7 @@ class VentasController extends Controller
     	$ventas = Venta::with('detalle')->where('anulado', 0)->where('piso_venta_id', $usuario)->get();
 
     	foreach ($ventas as $venta) {
-    		
+
     		$venta->anulado = 1;
     		$venta->save();
     	}

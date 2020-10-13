@@ -128,6 +128,7 @@
 				inventario_completo: [],
 				inventario: [],
 				productos: [],//LISTA DE PRODUCTOS QUE VOY A AGREGAR
+				iva:"",
 				articulo: {
 					id: 0,
 					nombre: "",
@@ -204,7 +205,7 @@
 
 					this.productos_comprar.push(this.articulo_compra);
 
-					//console.log(this.productos)
+
 					this.articulo_compra = {nombre: "", cantidad: "", sub_total: "", iva: "", total: "", unidad: "", costo: null, iva_porc: null, margen_ganancia: null};
 				}else{
 					this.selectedValue = null
@@ -213,6 +214,7 @@
 					this.articulo.total *= this.articulo.cantidad
 
 					this.productos.push(this.articulo);
+					console.log(this.productos)
 
 					//console.log(this.productos)
 					this.articulo = {id: 0, nombre: "", cantidad: "", sub_total: "", iva: "", total: ""};
@@ -228,24 +230,40 @@
 			},
 			vender(){
 				this.error = false;
-				axios.post('/api/ventas', {venta: {sub_total: this.sub_total, iva: this.iva, total: this.total, type: this.type},productos: this.productos}).then(response => {
-					console.log(response.data)
-					this.productos = [];
-					if (response.data.errors == null) {
-						window.location = "/ventas";
+				console.log('estoy en el vender')
+				// console.log(this.productos)
+				// console.log(
+				// 		 this.sub_total,
+				// 	 	 this.iva,
+				// 	  	 this.total,
+				// 	    this.type
 
-					}
+				// 	)
+				axios.post('/api/ventas',
+					{venta:
+						{
+							sub_total: this.sub_total,
+						 	iva: this.iva,
+						  	total: this.total,
+						    type: this.type
+						},
+						productos:this.productos
+					}).then(response => {
+					console.log("en el response",response.data)
+					this.productos = [];
+					console.lo("hice el post")
 					if (response.data.errors != null) {//COMPROBAR SI HAY ERRORES DE INSUFICIENCIA DE PRODUCTOS
 						this.error_message = response.data.errors
+						console.log('el mensaje',this.error_message)
 						this.error = true;
 						this.showAlert();
 
-					}
+					}else{
 
-					this.articulo = {id: 0, nombre: "", cantidad: "", sub_total: "", iva: "", total: ""};
-					this.cantidad_disponible = ""
-					t//his.ventas.splice(0,0, response.data);
-					this.productos = [];
+					// this.articulo = {id: 0, nombre: "", cantidad: "", sub_total: "", iva: "", total: ""};
+					// this.cantidad_disponible = ""
+					// t//his.ventas.splice(0,0, response.data);
+					// this.productos = [];
 
 					Swal.fire({
 					  	position: 'top-end',
@@ -254,10 +272,16 @@
 					  	showConfirmButton: false,
 					  	timer: 1500
 					})
-					window.location="http://127.0.0.1:8000/ventas/create"
-				}).catch(e => {
+				     window.location = "/ventas/create";
 
-					console.log(e.response)
+				 }
+
+				}).catch(e => {
+					console.log('se genero un error')
+					// this.error_message = e.data
+					this.error = true;
+					this.showAlert();
+					console.log(e)
 				})
 
 

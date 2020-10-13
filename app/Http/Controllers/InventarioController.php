@@ -40,7 +40,7 @@ class InventarioController extends Controller
                 $q->where('name', 'like', '%'.$request->search.'%');
             }
 
-        })->orderBy('cantidad', 'desc')->paginate(10);
+        })->orderBy('cantidad', 'desc')->paginate(20);
         return response()->json($inventario);
     }
 
