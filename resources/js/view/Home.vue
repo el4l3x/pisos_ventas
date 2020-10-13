@@ -2,6 +2,7 @@
 	<div class="container">
 		<!--ALERT DE EXITO-->
 		<b-alert show variant="success" fade dismissible v-if="sincronizacion_exito == true">Sincronizacion exitosa</b-alert>
+
 		<!--ALERT SI NO HAY SUFICIENTES PRODUCTOS-->
 		<b-alert show variant="danger" fade dismissible v-if="error == true">Ha ocurrido un error</b-alert>
 
@@ -10,17 +11,17 @@
 				<div class="card shadow">
 					<div class="card-body">
 						<div v-if="piso_venta_selected != null" style="font-size: 1em;" class="mt-3">
-							<span><span class="font-weight-bold">Nombre:</span> {{piso_venta_selected.nombre}}</span> <br>
-							<span><span class="font-weight-bold">Lugar:</span> {{piso_venta_selected.ubicacion}}</span> <br>
-							<span><span class="font-weight-bold">Dinero:</span> {{piso_venta_selected.dinero}}</span> <br>
+							<span><span class="font-weight-bold">PV:</span> {{piso_venta_selected.nombre}}</span> <br>
+							<!-- <span><span class="font-weight-bold">Lugar:</span> {{piso_venta_selected.ubicacion}}</span> <br> -->
+							<span><span class="font-weight-bold">Dinero:</span> {{formattedCurrencyValue}}</span> <br>
 
 						</div>
 							<hr>
 							<!-- <span class="font-weight-bold" >Ultima vez que sincronizo: </span> <span v-if="sincronizacion !== null">{{sincronizacion}}</span> <br> -->
-							<span class="font-weight-bold" >Ultima vez que vacio la caja: </span><span  v-if="caja !== null">{{caja}}</span> <br>
+							<span class="font-weight-bold" >Last Update: </span><span  v-if="caja !== null">{{caja}}</span> <br>
 							<hr>
 
-							<button type="button" class="btn btn-danger btn-block mb-2" data-toggle="modal" data-target="#vaciar-caja">
+							<button type="button" class="btn btn-primary btn-block mb-2" data-toggle="modal" data-target="#vaciar-caja">
 							Vaciar caja
 							</button>
 							<!-- <button class="btn btn-primary btn-block" @click="sincronizar">
@@ -56,16 +57,16 @@
 					</div>
 				</div>
 				<!--TABLAS DE VENTAS Y COMPRAS-->
-				<div class="mt-3">
+				<!-- <div class="mt-3">
 					<div class="card shadow">
 						<div class="card-body">
 							<h4 class="text-center">Ventas y compras</h4>
 							<tableVentas :id="id"/>
 						</div>
 					</div>
-				</div>
+				</div> -->
 				<!--TABLAS DE DESPACHOS Y RETIROS-->
-				<div class="mt-3">
+				<!-- <div class="mt-3">
 					<div class="card shadow">
 						<div class="card-body">
 							<h4 class="text-center">Despachos y retiros</h4>
@@ -73,16 +74,16 @@
 						</div>
 					</div>
 				</div>
-
+ -->
 				<!--TABLA DE INVENTARIO-->
-				<div class="mt-3">
+				<!-- <div class="mt-3">
 					<div class="card shadow">
 						<div class="card-body">
 							<h4 class="text-center">Inventario</h4>
 							<tableInventario :id="id"/>
 						</div>
 					</div>
-				</div>
+				</div> -->
 
 			</div>
 
@@ -519,6 +520,13 @@
 			}
 		},
 		computed:{
+
+        	formattedCurrencyValue(){
+       	 		if(!this.piso_venta_selected.dinero){
+       	 		 return "0.00"
+       	 		}
+           	 	return "Bs " + parseFloat(this.piso_venta_selected.dinero).toFixed(2)
+        	},
 			sincronizacion_exito(){
 
 				if (this.sincron.precios == true && this.sincron.despachos == true && this.sincron.ventas == true && this.sincron.monto == true && this.sincron.vaciar_caja == true && this.sincron.sincronizacion == true) {

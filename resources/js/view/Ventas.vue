@@ -35,13 +35,13 @@
 					</div>
 					<div class="card-body">
 						<div v-if="piso_venta_selected.length != 0" style="font-size: 1em;" class="mt-3">
-							<span><span class="font-weight-bold">Nombre:</span> {{piso_venta_selected.nombre}}</span> <br>
-							<span><span class="font-weight-bold">Lugar:</span> {{piso_venta_selected.ubicacion}}</span> <br>
-							<span><span class="font-weight-bold">Dinero:</span> {{piso_venta_selected.dinero}}</span> <br>
+							<span><span class="font-weight-bold">PV:</span> {{piso_venta_selected.nombre}}</span> <br>
+							<!-- <span><span class="font-weight-bold">Lugar:</span> {{piso_venta_selected.ubicacion}}</span> <br> -->
+							<span><span class="font-weight-bold">Dinero:</span> {{formattedCurrencyValue}}</span> <br>
 
 						</div>
 						<hr>
-						<span class="font-weight-bold" > sincronizo : </span> <span v-if="sincronizacion !== null">{{sincronizacion}}</span> <br>
+						<span class="font-weight-bold" > Last Update: </span> <span v-if="sincronizacion !== null">{{sincronizacion}}</span> <br>
 						<!-- <span class="font-weight-bold" >Ultima vez que vacio la caja: </span><span  v-if="caja !== null">{{caja}}</span> <br> -->
 						<hr>
 						<button class="btn btn-primary btn-block" @click="sincronizar">
@@ -1021,6 +1021,12 @@ export default{
 		}
 	},
 	computed:{
+		formattedCurrencyValue(){
+       	 		if(!this.piso_venta_selected.dinero){
+       	 		 return "0.00"
+       	 		}
+           	 	return "Bs " + parseFloat(this.piso_venta_selected.dinero).toFixed(2)
+        },
 		sub_total_total(){
 			let subtotal = 0;
 

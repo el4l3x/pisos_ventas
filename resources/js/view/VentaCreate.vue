@@ -22,8 +22,8 @@
 	    </b-alert>
 
 		<div class="card">
-			<div class="card-body shadow">	
-				
+			<div class="card-body shadow">
+
 				<h1 class="text-center">Nueva venta:</h1>
 				<hr>
 				<form method="post" @submit.prevent=""><!--Formulario-->
@@ -33,7 +33,7 @@
 							<div class="form-group col-md-3">
 								<label>Producto:</label>
 								<v-select id="producto" :options="inventario" v-model="selectedValue" searchable showDefaultOption/>
-								
+
 								<!--
 							    <select class="form-control" v-model="articulo.id" @change="establecer_nombre(articulo.id)">
 								  <option value="0">Seleecion producto</option>
@@ -48,7 +48,7 @@
 							</div>
 
 							<div class="form-group col-md-3">
-								<label for="cantidad">Cantidad al menor:</label>
+								<label for="cantidad">Cantidad:</label>
 								<input type="number" name="cantidad" id="cantidad" placeholder="Cantidad" class="form-control" v-model="articulo.cantidad">
 							</div>
 
@@ -65,7 +65,7 @@
 								<th>Producto</th>
 								<th>cantidad</th>
 								<th>Sub total</th>
-								<th>Iva</th>
+								<!-- <th>Iva</th> -->
 								<th>Total</th>
 								<th>Acciones</th>
 							</tr>
@@ -86,12 +86,12 @@
 
 					<div class="row">
 		      			<div class="col-md-7">
-		      				
+
 		      			</div>
 
 		      			<div class="col-md-2 text-right">
 		      				<span class="font-weight-bold small">Sub total:</span><br>
-		      				<span class="font-weight-bold small">iva:</span><br>
+		      				<!-- <span class="font-weight-bold small">iva:</span><br> -->
 		      				<br>
 		      				<span class="font-weight-bold small">Total:</span>
 
@@ -99,11 +99,11 @@
 
 		      			<div class="col-md-3">
 		      				<span class="small">{{sub_total_total}}</span><br>
-			      			<span class="small">{{iva_total}}</span><br>
+			      			<!-- <span class="small">{{iva_total}}</span><br> -->
 			   				<br>
 			      			<span class="small">{{total_total}}</span>
 		      			</div>
-		      			
+
 		      		</div>
 
 		      		<div class="row">
@@ -117,6 +117,7 @@
 
 <script>
 	import VSelect from '@alfsnd/vue-bootstrap-select'
+	import Swal from 'sweetalert2'
 
 	export default{
 		components: {
@@ -138,7 +139,7 @@
 				cantidad_disponible: "",
 				error: false,
 				error_message: "",
-				dismissSecs: 10,//MODAL 
+				dismissSecs: 10,//MODAL
 		        dismissCountDown: 0,
 		        showDismissibleAlert: false,
 		        selectedValue: null
@@ -166,25 +167,25 @@
 
 					let resultado = this.inventario_compra.find(element => element.inventario.id == id)
 					this.articulo_compra.nombre = resultado.inventario.name;
-					
+
 					this.articulo_compra.sub_total = resultado.inventario.precio.sub_total_menor
 					this.articulo_compra.iva = resultado.inventario.precio.iva_menor
 					this.articulo_compra.total = resultado.inventario.precio.total_menor
 
-					
+
 					console.log(this.articulo_compra);
 				}else{
 
 					let resultado = this.inventario_completo.find(element => element.inventario.id == id)
 					this.articulo.id = id;
 					this.articulo.nombre = resultado.inventario.name;
-					
+
 					this.articulo.sub_total = resultado.inventario.precio.sub_total_menor
 					this.articulo.iva = resultado.inventario.precio.iva_menor
 					this.articulo.total = resultado.inventario.precio.total_menor
-					
+
 					this.cantidad_disponible = resultado.cantidad;
-					
+
 					console.log(this.articulo);
 				}
 
@@ -202,7 +203,7 @@
 					this.articulo_compra.total *= this.articulo_compra.cantidad
 
 					this.productos_comprar.push(this.articulo_compra);
-						
+
 					//console.log(this.productos)
 					this.articulo_compra = {nombre: "", cantidad: "", sub_total: "", iva: "", total: "", unidad: "", costo: null, iva_porc: null, margen_ganancia: null};
 				}else{
@@ -212,7 +213,7 @@
 					this.articulo.total *= this.articulo.cantidad
 
 					this.productos.push(this.articulo);
-						
+
 					//console.log(this.productos)
 					this.articulo = {id: 0, nombre: "", cantidad: "", sub_total: "", iva: "", total: ""};
 				}
@@ -223,7 +224,7 @@
 				}else{
 					this.productos.splice(index, 1);
 				}
-				
+
 			},
 			vender(){
 				this.error = false;
@@ -232,27 +233,34 @@
 					this.productos = [];
 					if (response.data.errors == null) {
 						window.location = "/ventas";
-				
+
 					}
 					if (response.data.errors != null) {//COMPROBAR SI HAY ERRORES DE INSUFICIENCIA DE PRODUCTOS
 						this.error_message = response.data.errors
 						this.error = true;
 						this.showAlert();
-					
+
 					}
 
 					this.articulo = {id: 0, nombre: "", cantidad: "", sub_total: "", iva: "", total: ""};
 					this.cantidad_disponible = ""
 					t//his.ventas.splice(0,0, response.data);
 					this.productos = [];
-		
-					
+
+					Swal.fire({
+					  	position: 'top-end',
+					  	icon: 'success',
+					  	title: 'Producto vendido exitosamente',
+					  	showConfirmButton: false,
+					  	timer: 1500
+					})
+					window.location="http://127.0.0.1:8000/ventas/create"
 				}).catch(e => {
 
 					console.log(e.response)
 				})
-				
-				
+
+
 			},
 			countDownChanged(dismissCountDown) {//MODAL
 		        this.dismissCountDown = dismissCountDown
@@ -278,7 +286,7 @@
 
 				})
 				this.sub_total = subtotal;
-				
+
 				return subtotal;
 			},
 			iva_total(){
