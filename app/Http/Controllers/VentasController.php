@@ -64,9 +64,11 @@ class VentasController extends Controller
 
     public function store(Request $request)
     {
+    	// return $request;
     	$usuario = Auth::user()->piso_venta->id;
+
     	try{
-    		// return $request;
+    		   // return $request;
 			DB::beginTransaction();
 	    	$venta = new Venta();
 	        $venta->piso_venta_id = $usuario;
@@ -79,7 +81,6 @@ class VentasController extends Controller
 
 	        $venta->id_extra = $venta->id;
 	        $venta->save();
-
 	        foreach ($request->productos as $producto) {
 	        	//REGISTRAMOS EL PRODUCTO EN LOS DETALLES DE LA VENTA
 	            $detalles = new Detalle_venta();
@@ -90,13 +91,16 @@ class VentasController extends Controller
 		        $detalles->iva = $producto['iva'];
 		        $detalles->total = $producto['total'];
 	            $detalles->save();
+	            settype($producto['cantidad'],"integer");
 
 	            //RESTAMOS DEL STOCK
 	            $inventario = Inventario_piso_venta::where('piso_venta_id', $usuario)->where('inventario_id', $producto['id'])->orderBy('id', 'desc')->first();
 
 	            $resta = $inventario->cantidad -= $producto['cantidad'];
+
+	            // $data= ['resta' =>$resta, 'cantidad inventario' => $inventario->cantidad, 'cantidad de producto'=> $producto['cantidad']];
 	            //VALICACION POR SI NO HAY SUFICIENTES PRODUCTOS
-	            if ($resta < 0) {
+	            if ($resta <= 0) {
 
 	            	return response()->json(['errors' => 'no hay suficientes productos en el inventario']);
 	            	DB::rollback();

@@ -243,15 +243,15 @@
 					{venta:
 						{
 							sub_total: this.sub_total,
-						 	iva: this.iva,
+						 	iva: this.iva_total,
 						  	total: this.total,
 						    type: this.type
 						},
 						productos:this.productos
 					}).then(response => {
-					console.log("en el response",response.data)
+					console.log("en el response",response)
 					this.productos = [];
-					console.lo("hice el post")
+					console.log("hice el post")
 					if (response.data.errors != null) {//COMPROBAR SI HAY ERRORES DE INSUFICIENCIA DE PRODUCTOS
 						this.error_message = response.data.errors
 						console.log('el mensaje',this.error_message)
@@ -260,11 +260,6 @@
 
 					}else{
 
-					// this.articulo = {id: 0, nombre: "", cantidad: "", sub_total: "", iva: "", total: ""};
-					// this.cantidad_disponible = ""
-					// t//his.ventas.splice(0,0, response.data);
-					// this.productos = [];
-
 					Swal.fire({
 					  	position: 'top-end',
 					  	icon: 'success',
@@ -272,10 +267,12 @@
 					  	showConfirmButton: false,
 					  	timer: 1500
 					})
-				     window.location = "/ventas/create";
+					setTimeout(() => {
+					  window.location = "/ventas/create";
+					}, ms)
+
 
 				 }
-
 				}).catch(e => {
 					console.log('se genero un error')
 					// this.error_message = e.data
