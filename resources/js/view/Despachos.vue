@@ -449,7 +449,9 @@
        	 		if(!this.piso_venta_selected.dinero){
        	 		 return "0.00"
        	 		}
-           	 	return "Bs " + parseFloat(this.piso_venta_selected.dinero).toFixed(2)
+           	 	let n = new Intl.NumberFormat("de-DE").format(this.piso_venta_selected.dinero)
+				let a = "Bs " + n +",00"
+				return a
         	},
 		},
 		created(){

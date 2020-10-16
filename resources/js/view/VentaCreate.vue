@@ -75,7 +75,7 @@
 								<td>{{produc_enviar.nombre}}</td>
 								<td>{{produc_enviar.cantidad}}</td>
 								<td>{{produc_enviar.sub_total}}</td>
-								<td>{{produc_enviar.iva}}</td>
+								<!-- <td>{{produc_enviar.iva}}</td> -->
 								<td>{{produc_enviar.total}}</td>
 								<td>
 									<button class="btn btn-danger" type="button" @click="eliminar(index)">Eliminar</button>
@@ -98,10 +98,10 @@
 		      			</div>
 
 		      			<div class="col-md-3">
-		      				<span class="small">{{sub_total_total}}</span><br>
+		      				<span class="small"> Bs {{mostar_sub_total}}</span><br>
 			      			<!-- <span class="small">{{iva_total}}</span><br> -->
 			   				<br>
-			      			<span class="small">{{total_total}}</span>
+			      			<span class="small"> Bs {{mostar_total_total}}</span>
 		      			</div>
 
 		      		</div>
@@ -259,7 +259,7 @@
 						this.showAlert();
 
 					}else{
-
+						this.cantidad_disponible = null
 					Swal.fire({
 					  	position: 'top-end',
 					  	icon: 'success',
@@ -267,9 +267,9 @@
 					  	showConfirmButton: false,
 					  	timer: 1500
 					})
-					setTimeout(() => {
-					  window.location = "/ventas/create";
-					}, ms)
+					// setTimeout((1500) => {
+					// 	  window.location = "/ventas/create";
+					// }, ms)
 
 
 				 }
@@ -322,6 +322,21 @@
 
 				return iva;
 			},
+			// mostar_iva_total(){
+			// 	let n = new Intl.NumberFormat("en-IN", {maximumSignificantDigits: 2}).format(this.iva_total)
+			// 	return n
+			// },
+			mostar_sub_total(){
+				let n = new Intl.NumberFormat("de-DE").format(this.sub_total_total)
+				let a = n +",00"
+				return a
+			},
+			mostar_total_total(){
+				let n = new Intl.NumberFormat("de-DE").format(this.total_total)
+				let a = n +",00"
+				return a
+			},
+
 			total_total(){
 				let total = 0;
 

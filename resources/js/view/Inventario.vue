@@ -146,7 +146,6 @@
 							</tr>
 						</tbody>
 					</table>
-					{{currentPage}}
 					<div class="overflow-auto">
 						<b-pagination v-model="currentPage" @change="paginar($event)" :per-page="per_page"  :total-rows="total_paginas" size="sm"></b-pagination>
 					</div>
@@ -469,7 +468,9 @@
        	 		if(!this.piso_venta_selected.dinero){
        	 		 return "0.00"
        	 		}
-           	 	return "Bs " + parseFloat(this.piso_venta_selected.dinero).toFixed(2)
+           	 	let n = new Intl.NumberFormat("de-DE").format(this.piso_venta_selected.dinero)
+				let a = "Bs " + n +",00"
+				return a
         	},
 		},
 		mounted(){

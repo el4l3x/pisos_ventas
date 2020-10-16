@@ -205,17 +205,14 @@
 
 	      			<div class="col-md-2 text-right">
 	      				<span class="font-weight-bold small">Sub total:</span><br>
-	      				<span class="font-weight-bold small">iva:</span><br>
-	      				<br>
+
 	      				<span class="font-weight-bold small">Total:</span>
 
 	      			</div>
 
 	      			<div class="col-md-3">
-	      				<span class="small">{{sub_total_total_comprar}}</span><br>
-		      			<span class="small">{{iva_total_total_comprar}}</span><br>
-		   				<br>
-		      			<span class="small">{{total_total_comprar}}</span>
+	      				<span class="small">Bs {{mostrar_sub_total_total_comprar}}</span><br>
+		      			<span class="small">Bs {{mostrar_total_total_comprar}}</span>
 	      			</div>
 
 	      		</div>
@@ -229,7 +226,7 @@
 </template>
 
 <script>
-
+	import Swal from 'sweetalert2'
 	export default{
 		data(){
 			return{
@@ -296,10 +293,19 @@
 				this.error = false;
 				axios.post('/api/ventas-comprar', {venta: {sub_total: this.sub_total_de_compra, iva: this.iva_de_compra, total: this.total_de_compra},productos: this.productos_comprar}).then(response => {
 					console.log(response.data)
-						window.location = "/ventas";
-						//this.articulo_compra = {nombre: "", cantidad: "", sub_total: "", iva: "", total: "", unidad: "", costo: null, iva_porc: null, margen_ganancia: null};
-						//this.ventas.splice(0,0, response.data);
-						//this.productos_comprar = [];
+					Swal.fire({
+					  	position: 'top-end',
+					  	icon: 'success',
+					  	title: 'Compra exitosa',
+					  	showConfirmButton: false,
+					  	timer: 1500
+					})
+						// window.location = "/ventas";
+						this.articulo_compra = null
+						this.sub_total_comprar = null
+						this.total_comprar = null
+						this.ventas = null
+						this.productos_comprar = [];
 
 				}).catch(e => {
 
@@ -394,6 +400,16 @@
 				this.iva_de_compra = iva;
 
 				return iva;
+			},
+			mostrar_sub_total_total_comprar(){
+				let n = new Intl.NumberFormat("de-DE").format(this.sub_total_total_comprar)
+				let a = n +",00"
+				return a
+			},
+			mostrar_total_total_comprar(){
+				let n = new Intl.NumberFormat("de-DE").format(this.total_total_comprar)
+				let a = n +",00"
+				return a
 			},
 			total_total_comprar(){
 				let total = 0;
