@@ -706,7 +706,7 @@ export default{
 								console.log(response)
 								//SINC
 								this.sincron.vaciar_caja = true;
-								window.location="http://127.0.0.1:8000/ventas";
+								window.location="/ventas";
 							}).catch(e => {
 								console.log(e.response)
 								this.error = true;
