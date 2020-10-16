@@ -226,7 +226,7 @@
 </template>
 
 <script>
-	import Swal from 'sweetalert2'
+
 	export default{
 		data(){
 			return{
@@ -293,19 +293,10 @@
 				this.error = false;
 				axios.post('/api/ventas-comprar', {venta: {sub_total: this.sub_total_de_compra, iva: this.iva_de_compra, total: this.total_de_compra},productos: this.productos_comprar}).then(response => {
 					console.log(response.data)
-					Swal.fire({
-					  	position: 'top-end',
-					  	icon: 'success',
-					  	title: 'Compra exitosa',
-					  	showConfirmButton: false,
-					  	timer: 1500
-					})
-						// window.location = "/ventas";
-						this.articulo_compra = null
-						this.sub_total_comprar = null
-						this.total_comprar = null
-						this.ventas = null
-						this.productos_comprar = [];
+						window.location = "/ventas";
+						//this.articulo_compra = {nombre: "", cantidad: "", sub_total: "", iva: "", total: "", unidad: "", costo: null, iva_porc: null, margen_ganancia: null};
+						//this.ventas.splice(0,0, response.data);
+						//this.productos_comprar = [];
 
 				}).catch(e => {
 
