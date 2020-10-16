@@ -314,7 +314,7 @@
 			   							this.get_id();
 									 	this.cambiar()
 		       							this.sincro_exitosa = true
-		       							window.location="http://127.0.0.1:8000/inventario";
+		       							window.location="/inventario";
 									}).catch(e => {
 										console.log(e.response)
 										this.error = true;
